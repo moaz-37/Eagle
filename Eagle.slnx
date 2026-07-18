@@ -1,5 +1,5 @@
 <Solution>
   <Project Path="Eagle.BL/Eagle.BL.csproj" Id="24af0d9f-0388-4d09-8332-2530d22f685a" />
   <Project Path="Eagle.DAL/Eagle.DAL.csproj" Id="e017fd42-ffc5-4ef9-a7e0-1e13c0bce1df" />
-  <Project Path="Eagle/Eagle.PL.csproj" />
+  <Project Path="Eagle.PL/Eagle.PL.csproj" />
 </Solution>
