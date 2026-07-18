@@ -1,6 +1,6 @@
 ﻿namespace Eagle.DAL
 {
-    public class Class1
+    public class Repo1
     {
 
     }

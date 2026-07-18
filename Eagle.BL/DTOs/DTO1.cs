@@ -1,6 +1,6 @@
 ﻿namespace Eagle.BL
 {
-    public class Class1
+    public class DTO1
     {
 
     }
