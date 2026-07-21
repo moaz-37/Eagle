@@ -1,0 +1,24 @@
+@model Eagle.BL.DTOs.SaleStatsSummary
+<h3>إحصائيات المبيعات</h3>
+<form method="get" class="row g-2 mb-4">
+    <div class="col-auto"><input type="date" name="from" class="form-control" /></div>
+    <div class="col-auto"><input type="date" name="to" class="form-control" /></div>
+    <div class="col-auto"><button class="btn btn-outline-dark">تصفية</button></div>
+</form>
+
+<div class="row mb-4">
+    <div class="col"><div class="card p-3">عدد العمليات<h4>@Model.SalesCount</h4></div></div>
+    <div class="col"><div class="card p-3">القطع المباعة<h4>@Model.PiecesSold</h4></div></div>
+    <div class="col"><div class="card p-3">إجمالي المبيعات<h4>@Model.TotalRevenue</h4></div></div>
+    <div class="col"><div class="card p-3">صافي الربح<h4>@Model.TotalProfit</h4></div></div>
+</div>
+
+<table class="table">
+    <thead><tr><th>الكاشير</th><th>عدد العمليات</th><th>المبيعات</th><th>الربح</th></tr></thead>
+    <tbody>
+    @foreach (var c in Model.ByCashier)
+    {
+        <tr><td>@c.CashierName</td><td>@c.SalesCount</td><td>@c.Revenue</td><td>@c.Profit</td></tr>
+    }
+    </tbody>
+</table>

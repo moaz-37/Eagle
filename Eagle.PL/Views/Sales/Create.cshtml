@@ -1,0 +1,40 @@
+@model Eagle.BL.DTOs.ProductLookupResult?
+<h3>تسجيل عملية بيع</h3>
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form method="get" class="d-flex gap-2 mb-4" style="max-width:400px;">
+    <input type="text" name="pieceCode" class="form-control" placeholder="كود الصنف" value="@ViewBag.PieceCode" required />
+    <button class="btn btn-outline-dark">بحث</button>
+</form>
+
+@if (Model != null)
+{
+    <div class="card p-3 mb-3" style="max-width:500px;">
+        <h5>@Model.Name (@Model.PieceCode)</h5>
+        <p class="text-muted mb-1">الماركة: @Model.Brand</p>
+        <p class="mb-1">سعر الشراء: @Model.BuyPrice</p>
+        <p class="mb-3">سعر البيع المقترح: @Model.SellPrice</p>
+
+        <form asp-action="Create" method="post">
+            @Html.Hidden("pieceCode", Model.PieceCode)
+            <div class="mb-2">
+                <label class="form-label">اللون / المقاس</label>
+                <select name="ProductVariantId" class="form-select" required>
+                    @foreach (var v in Model.Variants.Where(v => v.StockQuantity > 0))
+                    {
+                        <option value="@v.VariantId">@v.Color - @v.Size (متاح: @v.StockQuantity)</option>
+                    }
+                </select>
+            </div>
+            <div class="mb-2">
+                <label class="form-label">الكمية</label>
+                <input type="number" name="Quantity" class="form-control" min="1" value="1" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">سعر البيع</label>
+                <input type="number" step="0.01" name="UnitSellPrice" class="form-control" value="@Model.SellPrice" required />
+            </div>
+            <button class="btn btn-success w-100">تأكيد البيع</button>
+        </form>
+    </div>
+}
