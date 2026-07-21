@@ -1,3 +1,4 @@
+using Eagle.BL.Services;
 using Eagle.DAL.Data;
 using Eagle.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -19,6 +20,16 @@ builder.Services.AddIdentity<User, Role>(options =>
     .AddEntityFrameworkStores<EagleDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromHours(12);
+});
+
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<SaleService>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -31,7 +42,18 @@ using (var scope = app.Services.CreateScope())
         if (!await roleManager.RoleExistsAsync(role))
             await roleManager.CreateAsync(new Role(role));
     }
+
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+    const string managerEmail = "admin@eagle.local";
+    if (await userManager.FindByEmailAsync(managerEmail) is null)
+    {
+        var manager = new User { UserName = managerEmail, Email = managerEmail, FullName = "Eagle Admin" };
+        var result = await userManager.CreateAsync(manager, "Admin@123");
+        if (result.Succeeded)
+            await userManager.AddToRoleAsync(manager, "Manager");
+    }
 }
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -50,8 +72,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Account}/{action=Login}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();
