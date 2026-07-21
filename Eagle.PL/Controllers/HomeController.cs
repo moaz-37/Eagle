@@ -1,9 +1,11 @@
 using Eagle.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace Eagle.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         public IActionResult Index()
