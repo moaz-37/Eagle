@@ -33,14 +33,48 @@ namespace Eagle.DAL.Migrations
                     b.Property<string>("Brand")
                         .HasColumnType("text");
 
+                    b.Property<decimal>("BuyPrice")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Price")
+                    b.Property<string>("PieceCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("SellPrice")
                         .HasColumnType("decimal(10,2)");
 
+                    b.HasKey("Id");
+
+                    b.HasIndex("PieceCode")
+                        .IsUnique();
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Eagle.DAL.Entities.ProductVariant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Size")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("StockQuantity")
@@ -48,7 +82,10 @@ namespace Eagle.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.HasIndex("ProductId", "Color", "Size")
+                        .IsUnique();
+
+                    b.ToTable("ProductVariants");
                 });
 
             modelBuilder.Entity("Eagle.DAL.Entities.Role", b =>
@@ -110,7 +147,7 @@ namespace Eagle.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ProductId")
+                    b.Property<int>("ProductVariantId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
@@ -119,12 +156,15 @@ namespace Eagle.DAL.Migrations
                     b.Property<int>("SaleId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("UnitPrice")
+                    b.Property<decimal>("UnitBuyPrice")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("UnitSellPrice")
                         .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductVariantId");
 
                     b.HasIndex("SaleId");
 
@@ -303,6 +343,17 @@ namespace Eagle.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Eagle.DAL.Entities.ProductVariant", b =>
+                {
+                    b.HasOne("Eagle.DAL.Entities.Product", "Product")
+                        .WithMany("Variants")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Eagle.DAL.Entities.Sale", b =>
                 {
                     b.HasOne("Eagle.DAL.Entities.User", "User")
@@ -316,9 +367,9 @@ namespace Eagle.DAL.Migrations
 
             modelBuilder.Entity("Eagle.DAL.Entities.SaleItem", b =>
                 {
-                    b.HasOne("Eagle.DAL.Entities.Product", "Product")
+                    b.HasOne("Eagle.DAL.Entities.ProductVariant", "ProductVariant")
                         .WithMany("SaleItems")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("ProductVariantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -328,7 +379,7 @@ namespace Eagle.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
+                    b.Navigation("ProductVariant");
 
                     b.Navigation("Sale");
                 });
@@ -385,6 +436,11 @@ namespace Eagle.DAL.Migrations
                 });
 
             modelBuilder.Entity("Eagle.DAL.Entities.Product", b =>
+                {
+                    b.Navigation("Variants");
+                });
+
+            modelBuilder.Entity("Eagle.DAL.Entities.ProductVariant", b =>
                 {
                     b.Navigation("SaleItems");
                 });
