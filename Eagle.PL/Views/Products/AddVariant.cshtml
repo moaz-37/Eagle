@@ -1,31 +1,21 @@
-@model AddVariantDto
+@model Eagle.PL.Models.AddVariantPageViewModel
 @{
-    ViewData["Title"] = "إضافة لون/مقاس";
+    ViewData["Title"] = "إضافة لون / مقاس";
 }
 
 <style>
-    .form-card {
-        border: none;
-        border-radius: 16px;
-        background-color: #ffffff;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-        padding: 2.5rem;
-        width: 100%;
-    }
-
-    .logo-wrapper {
-        width: 100px;
-        height: 100px;
-        margin: 0 auto 1.5rem;
+    .page-header {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
-    .logo-wrapper img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
+    .page-title-group {
+        display: flex;
+        flex-direction: column;
     }
 
     .form-title {
@@ -33,171 +23,589 @@
         font-weight: 700;
         font-size: 1.5rem;
         margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
 
     .form-subtitle {
         color: #6c757d;
         font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .piece-code-badge {
+        font-family: 'Courier New', monospace;
+        font-weight: 600;
+        color: #212529;
+        background-color: #f8f9fa;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        border: 1px solid #e9ecef;
+    }
+
+    /* Back Button */
+    .btn-back {
+        background-color: #ffffff;
+        border: 1.5px solid #212529;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #212529;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-back:hover {
+        background-color: #212529;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Success Alert */
+    .alert-success-custom {
+        background-color: #d1e7dd;
+        border: 1px solid #badbcc;
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 500;
+        color: #0f5132;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    .alert-success-custom i {
+        font-size: 1.25rem;
+        color: #198754;
+    }
+
+    .alert-close {
+        background: transparent;
+        border: none;
+        color: inherit;
+        opacity: 0.6;
+        margin-right: auto;
+        margin-left: 0;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 4px;
+        transition: opacity 0.2s;
+    }
+
+    .alert-close:hover {
+        opacity: 1;
+    }
+
+    @@keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Section Wrapper */
+    .section-wrapper {
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
         margin-bottom: 2rem;
     }
 
-    .form-label {
-        font-weight: 600;
-        color: #495057;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
+    .section-header {
+        background-color: #f8f9fa;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
     }
 
-    .input-wrapper {
-        position: relative;
+    .section-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-badge {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+        font-weight: 600;
+        padding: 0.3rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    .section-body {
+        padding: 1.5rem;
+    }
+
+    /* Color Chips */
+    .color-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
         margin-bottom: 1.25rem;
     }
 
-    .input-wrapper .form-control,
-    .input-wrapper .form-select {
-        border-radius: 10px;
+    .color-chip {
+        background-color: #ffffff;
         border: 1.5px solid #e9ecef;
-        padding: 12px 45px 12px 15px;
-        font-size: 0.95rem;
-        background-color: #fdfdfd;
+        border-radius: 30px;
+        padding: 0.45rem 1.1rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #495057;
+        text-decoration: none;
         transition: all 0.2s ease-in-out;
-        height: auto;
-        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
     }
 
-    .input-wrapper .form-control:focus,
-    .input-wrapper .form-select:focus {
+    .color-chip:hover {
+        border-color: #212529;
+        color: #212529;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .color-chip.active {
+        background-color: #212529;
+        border-color: #212529;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(33, 37, 41, 0.25);
+    }
+
+    .color-chip.active i {
+        color: #ffffff;
+    }
+
+    .color-chip i {
+        color: #adb5bd;
+        font-size: 0.9rem;
+        transition: color 0.2s ease-in-out;
+    }
+
+    /* Add New Link */
+    .add-new-link {
+        color: #0d6efd;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .add-new-link:hover {
+        color: #0a58ca;
+        gap: 0.5rem;
+    }
+
+    /* Inline Form */
+    .inline-form {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+    }
+
+    .inline-form .form-control {
+        border-radius: 10px;
+        border: 1.5px solid #e9ecef;
+        padding: 10px 15px;
+        font-size: 0.9rem;
+        background-color: #fdfdfd;
+        transition: all 0.2s ease-in-out;
+        flex: 1;
+        min-width: 180px;
+    }
+
+    .inline-form .form-control:focus {
         border-color: #212529;
         box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.1);
         background-color: #ffffff;
     }
 
-    .input-wrapper .input-icon {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #adb5bd;
-        font-size: 1.15rem;
-        pointer-events: none;
-        transition: color 0.2s ease-in-out;
-        z-index: 5;
-    }
-
-    .input-wrapper:focus-within .input-icon {
-        color: #212529;
-    }
-
-    .btn-submit {
+    /* Buttons */
+    .btn-primary-dark {
         background-color: #212529;
         border: none;
         border-radius: 10px;
-        padding: 12px;
+        padding: 10px 20px;
         font-weight: 600;
-        font-size: 1rem;
-        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+        color: #ffffff;
         transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        white-space: nowrap;
+        cursor: pointer;
     }
 
-    .btn-submit:hover {
+    .btn-primary-dark:hover {
         background-color: #000000;
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         color: #fff;
     }
 
-    .btn-submit:active {
-        transform: translateY(0);
-    }
-
-    .btn-back {
-        color: #6c757d;
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s ease-in-out;
+    .btn-outline-sm {
+        background-color: #ffffff;
+        border: 1.5px solid #212529;
+        border-radius: 8px;
+        padding: 0.4rem 0.9rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #212529;
+        transition: all 0.2s ease-in-out;
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        margin-top: 1rem;
+        gap: 0.35rem;
+        white-space: nowrap;
+        cursor: pointer;
     }
 
-    .btn-back:hover {
+    .btn-outline-sm:hover {
+        background-color: #212529;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Size Row */
+    .size-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        background-color: #fdfdfd;
+        border: 1px solid #f1f3f5;
+        border-radius: 12px;
+        margin-bottom: 0.75rem;
+        flex-wrap: wrap;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .size-row:hover {
+        background-color: #f8f9fa;
+        border-color: #e9ecef;
+    }
+
+    .size-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.85rem;
+        background-color: #f3e8ff;
+        color: #7c3aed;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        min-width: 90px;
+        justify-content: center;
+    }
+
+    .size-label i {
+        font-size: 0.9rem;
+    }
+
+    .stock-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        color: #6c757d;
+        font-size: 0.85rem;
+        font-weight: 500;
+        min-width: 100px;
+    }
+
+    .stock-info i {
+        color: #adb5bd;
+        font-size: 0.9rem;
+    }
+
+    .stock-info strong {
+        color: #212529;
+        font-weight: 700;
+    }
+
+    .size-row .form-control {
+        max-width: 120px;
+        border-radius: 10px;
+        border: 1.5px solid #e9ecef;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        background-color: #ffffff;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .size-row .form-control:focus {
+        border-color: #212529;
+        box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.1);
+    }
+
+    /* Divider */
+    .section-divider {
+        border: none;
+        border-top: 1px dashed #e9ecef;
+        margin: 1.5rem 0;
+    }
+
+    .divider-title {
+        color: #495057;
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .divider-title i {
         color: #212529;
     }
 
-    .text-danger {
-        font-size: 0.85rem;
-        margin-top: 0.25rem;
-        display: block;
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 2.5rem 1.5rem;
+        color: #6c757d;
+    }
+
+    .empty-state-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: #adb5bd;
+        font-size: 2rem;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .btn-back {
+            justify-content: center;
+        }
+
+        .size-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .size-row .form-control {
+            max-width: 100%;
+        }
+
+        .inline-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .inline-form .form-control {
+            min-width: 0;
+        }
     }
 </style>
 
 <div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="form-card">
 
-                <!-- Logo -->
-                <div class="logo-wrapper">
-                    <img src="~/images/Eagle.png" alt="Eagle Logo" />
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title-group">
+            <h2 class="form-title">
+                <i class="bi bi-palette"></i>
+                إضافة لون / مقاس
+                <span class="piece-code-badge">@Model.PieceCode</span>
+            </h2>
+            <p class="form-subtitle">@Model.ProductName — إدارة الألوان والمقاسات المتاحة</p>
+        </div>
+        <a asp-controller="Products" asp-action="Index" class="btn-back">
+            <i class="bi bi-arrow-right"></i>
+            العودة إلى المخزون
+        </a>
+    </div>
+
+    <!-- Success Alert -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert-success-custom">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>@TempData["Success"]</span>
+            <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    }
+
+    <!-- Colors Section -->
+    <div class="section-wrapper">
+        <div class="section-header">
+            <h5 class="section-title">
+                <i class="bi bi-palette-fill"></i>
+                الألوان الموجودة
+            </h5>
+            <span class="section-badge">@Model.Colors.Count لون</span>
+        </div>
+
+        <div class="section-body">
+            @if (!Model.Colors.Any())
+            {
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="bi bi-palette"></i>
+                    </div>
+                    <p>لا توجد ألوان مضافة بعد لهذا الصنف</p>
+                </div>
+            }
+            else
+            {
+                <div class="color-chips">
+                    @foreach (var c in Model.Colors)
+                    {
+                        var isActive = c == Model.SelectedColor;
+                        <a asp-action="AddVariant"
+                           asp-route-productId="@Model.ProductId"
+                           asp-route-color="@c"
+                           class="color-chip @(isActive ? "active" : "")">
+                            <i class="bi bi-palette"></i>
+                            @c
+                            @if (isActive)
+                            {
+                                <i class="bi bi-check-circle-fill"></i>
+                            }
+                        </a>
+                    }
+                </div>
+            }
+
+            @if (!Model.ShowNewColorForm)
+            {
+                <a asp-action="AddVariant"
+                   asp-route-productId="@Model.ProductId"
+                   asp-route-newColor="true"
+                   class="add-new-link">
+                    <i class="bi bi-plus-circle"></i>
+                    إضافة لون جديد
+                </a>
+            }
+            else
+            {
+                <form method="get" asp-action="AddVariant" class="inline-form">
+                    <input type="hidden" name="productId" value="@Model.ProductId" />
+                    <input type="text" name="color" class="form-control" placeholder="اسم اللون الجديد" required autofocus />
+                    <button type="submit" class="btn-primary-dark">
+                        <i class="bi bi-arrow-left"></i>
+                        التالي
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <!-- Sizes Section -->
+    @if (!string.IsNullOrWhiteSpace(Model.SelectedColor))
+    {
+        <div class="section-wrapper">
+            <div class="section-header">
+                <h5 class="section-title">
+                    <i class="bi bi-rulers"></i>
+                    مقاسات اللون:
+                    <span class="piece-code-badge" style="background-color: #f3e8ff; color: #7c3aed; border-color: #e9d5ff;">
+                        <i class="bi bi-palette"></i> @Model.SelectedColor
+                    </span>
+                </h5>
+                <span class="section-badge">@Model.SizesForColor.Count مقاس</span>
+            </div>
+
+            <div class="section-body">
+
+                @if (!Model.SizesForColor.Any())
+                {
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-rulers"></i>
+                        </div>
+                        <p>لا توجد مقاسات مضافة بعد لهذا اللون</p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var s in Model.SizesForColor)
+                    {
+                        <form asp-action="AddVariant" method="post" class="size-row">
+                            <input type="hidden" name="ProductId" value="@Model.ProductId" />
+                            <input type="hidden" name="Color" value="@Model.SelectedColor" />
+                            <input type="hidden" name="Size" value="@s.Size" />
+
+                            <span class="size-label">
+                                <i class="bi bi-rulers"></i>
+                                مقاس @s.Size
+                            </span>
+                            <span class="stock-info">
+                                <i class="bi bi-boxes"></i>
+                                متاح: <strong>@s.StockQuantity</strong>
+                            </span>
+                            <input type="number" name="StockQuantity" min="1" value="1" class="form-control" placeholder="الكمية" />
+                            <button type="submit" class="btn-outline-sm">
+                                <i class="bi bi-plus-circle"></i>
+                                إضافة كمية
+                            </button>
+                        </form>
+                    }
+                }
+
+                <hr class="section-divider" />
+
+                <div class="divider-title">
+                    <i class="bi bi-plus-square"></i>
+                    إضافة مقاس جديد لهذا اللون
                 </div>
 
-                <!-- Header -->
-                <div class="text-center mb-4">
-                    <h2 class="form-title">إضافة لون / مقاس</h2>
-                    <p class="form-subtitle">أضف الألوان والمقاسات المتاحة لهذا الصنف</p>
-                </div>
-
-                <!-- Form -->
-                <form asp-controller="Products" asp-action="AddVariant" method="post">
-
-                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
-
-                    <!-- Hidden ProductId -->
-                    <input type="hidden" asp-for="ProductId" />
-
-                    <!-- Color -->
-                    <label class="form-label">اللون</label>
-                    <div class="input-wrapper">
-                        <input asp-for="Color" class="form-control" placeholder="مثال: أحمر، أزرق" required />
-                        <i class="bi bi-palette input-icon"></i>
-                    </div>
-                    <span asp-validation-for="Color" class="text-danger"></span>
-
-                    <!-- Size -->
-                    <label class="form-label">المقاس</label>
-                    <div class="input-wrapper">
-                        <input asp-for="Size" class="form-control" placeholder="مثال: S, M, L, 42" required />
-                        <i class="bi bi-rulers input-icon"></i>
-                    </div>
-                    <span asp-validation-for="Size" class="text-danger"></span>
-
-                    <!-- Stock Quantity -->
-                    <label class="form-label">الكمية</label>
-                    <div class="input-wrapper">
-                        <input asp-for="StockQuantity" type="number" min="0" class="form-control" placeholder="0" required />
-                        <i class="bi bi-boxes input-icon"></i>
-                    </div>
-                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
-
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn btn-dark btn-submit w-100 mt-3">
+                <form asp-action="AddVariant" method="post" class="inline-form">
+                    <input type="hidden" name="ProductId" value="@Model.ProductId" />
+                    <input type="hidden" name="Color" value="@Model.SelectedColor" />
+                    <input type="text" name="Size" class="form-control" placeholder="مقاس جديد (مثل: M, 42)" required style="max-width: 180px;" />
+                    <input type="number" name="StockQuantity" min="1" value="1" class="form-control" placeholder="الكمية" style="max-width: 140px;" />
+                    <button type="submit" class="btn-primary-dark">
+                        <i class="bi bi-plus-circle"></i>
                         إضافة
                     </button>
                 </form>
-
-                <!-- Back Link -->
-                <div class="text-center">
-                    <a asp-controller="Products" asp-action="Index" class="btn-back">
-                        <i class="bi bi-arrow-right"></i>
-                        العودة إلى المخزون
-                    </a>
-                </div>
             </div>
         </div>
-    </div>
-</div>
+    }
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+</div>

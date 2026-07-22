@@ -1,0 +1,583 @@
+@model Eagle.BL.DTOs.ProductDetailDto
+@{
+    ViewData["Title"] = "تفاصيل الصنف";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-subtitle {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .piece-code-badge {
+        font-family: 'Courier New', monospace;
+        font-weight: 600;
+        color: #212529;
+        background-color: #f8f9fa;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        border: 1px solid #e9ecef;
+    }
+
+    /* Back Button */
+    .btn-back {
+        background-color: #ffffff;
+        border: 1.5px solid #212529;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #212529;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-back:hover {
+        background-color: #212529;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* KPI Cards */
+    .kpi-card {
+        background-color: #ffffff;
+        border: none;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease-in-out;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    }
+
+    .kpi-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        color: #212529;
+        font-size: 1.5rem;
+    }
+
+    .kpi-label {
+        color: #6c757d;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .kpi-value {
+        color: #212529;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1;
+    }
+
+    .kpi-value small {
+        color: #6c757d;
+        font-weight: 400;
+        font-size: 0.9rem;
+    }
+
+    /* Section */
+    .section-wrapper {
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .section-header {
+        background-color: #f8f9fa;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .section-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-badge {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+        font-weight: 600;
+        padding: 0.3rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    /* Modern Table */
+    .modern-table {
+        margin: 0;
+        width: 100%;
+    }
+
+    .modern-table thead th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem 1.25rem;
+        border-bottom: 2px solid #e9ecef;
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    .modern-table thead th i {
+        margin-left: 0.35rem;
+        color: #adb5bd;
+        font-size: 0.9rem;
+    }
+
+    .modern-table tbody td {
+        padding: 1.15rem 1.25rem;
+        color: #212529;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #f1f3f5;
+        vertical-align: middle;
+    }
+
+    .modern-table tbody tr {
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .modern-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .modern-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Cell Styles */
+    .variant-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .variant-color {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+    }
+
+    .variant-size {
+        background-color: #f3e8ff;
+        color: #7c3aed;
+    }
+
+    .quantity-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        padding: 0.3rem 0.6rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .quantity-ok {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .quantity-low {
+        background-color: #fff3cd;
+        color: #664d03;
+    }
+
+    .quantity-empty {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    .price-cell {
+        font-weight: 600;
+        color: #212529;
+        white-space: nowrap;
+    }
+
+    .price-cell small {
+        color: #6c757d;
+        font-weight: 400;
+        font-size: 0.8rem;
+    }
+
+    .cashier-name {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+    }
+
+    .cashier-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #212529;
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .date-cell {
+        display: inline-flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        font-size: 0.85rem;
+    }
+
+    .date-main {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .date-time {
+        color: #6c757d;
+        font-size: 0.8rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1.5rem;
+        color: #6c757d;
+    }
+
+    .empty-state-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: #adb5bd;
+        font-size: 2rem;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    /* Responsive Table */
+    .table-responsive-wrapper {
+        overflow-x: auto;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .btn-back {
+            justify-content: center;
+        }
+
+        .modern-table thead th,
+        .modern-table tbody td {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .cashier-avatar {
+            display: none;
+        }
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title-group">
+            <h2 class="form-title">
+                <i class="bi bi-box-seam"></i>
+                @Model.Name
+                <span class="piece-code-badge">@Model.PieceCode</span>
+            </h2>
+            <p class="form-subtitle">عرض تفاصيل الصنف والمخزون وسجل المبيعات</p>
+        </div>
+        <a asp-controller="Products" asp-action="Index" class="btn-back">
+            <i class="bi bi-arrow-right"></i>
+            العودة إلى المخزون
+        </a>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <div class="kpi-label">تاريخ الإضافة</div>
+                <h4 class="kpi-value">@Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</h4>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-cart-check"></i>
+                </div>
+                <div class="kpi-label">سعر الشراء</div>
+                <h4 class="kpi-value">@Model.BuyPrice <small>ج.م</small></h4>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-tag-fill"></i>
+                </div>
+                <div class="kpi-label">سعر البيع</div>
+                <h4 class="kpi-value">@Model.SellPrice <small>ج.م</small></h4>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-boxes"></i>
+                </div>
+                <div class="kpi-label">إجمالي المخزون</div>
+                <h4 class="kpi-value">@Model.Variants.Sum(v => v.StockQuantity) <small>قطعة</small></h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Variants Section -->
+    <div class="section-wrapper">
+        <div class="section-header">
+            <h5 class="section-title">
+                <i class="bi bi-palette"></i>
+                الألوان والمقاسات
+            </h5>
+            <span class="section-badge">@Model.Variants.Count متغير</span>
+        </div>
+
+        @if (!Model.Variants.Any())
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-palette"></i>
+                </div>
+                <p>لا توجد ألوان أو مقاسات مضافة لهذا الصنف</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive-wrapper">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="bi bi-palette"></i>
+                                اللون
+                            </th>
+                            <th>
+                                <i class="bi bi-rulers"></i>
+                                المقاس
+                            </th>
+                            <th>
+                                <i class="bi bi-boxes"></i>
+                                الكمية المتاحة
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var v in Model.Variants)
+                        {
+                            var qtyClass = v.StockQuantity == 0 ? "quantity-empty" :
+                                           v.StockQuantity <= 5 ? "quantity-low" : "quantity-ok";
+                            <tr>
+                                <td>
+                                    <span class="variant-info variant-color">
+                                        <i class="bi bi-palette"></i>
+                                        @v.Color
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="variant-info variant-size">
+                                        <i class="bi bi-rulers"></i>
+                                        @v.Size
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="quantity-badge @qtyClass">
+                                        @(v.StockQuantity > 0 ? v.StockQuantity.ToString() : "غير متاح")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <!-- Sales History Section -->
+    <div class="section-wrapper">
+        <div class="section-header">
+            <h5 class="section-title">
+                <i class="bi bi-receipt"></i>
+                سجل عمليات البيع لهذا الصنف
+            </h5>
+            <span class="section-badge">@Model.SaleHistory.Count عملية</span>
+        </div>
+
+        @if (!Model.SaleHistory.Any())
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <p>لم يتم بيع أي قطعة من هذا الصنف بعد</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive-wrapper">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="bi bi-palette"></i>
+                                اللون
+                            </th>
+                            <th>
+                                <i class="bi bi-rulers"></i>
+                                المقاس
+                            </th>
+                            <th>
+                                <i class="bi bi-boxes"></i>
+                                الكمية
+                            </th>
+                            <th>
+                                <i class="bi bi-tag-fill"></i>
+                                سعر البيع
+                            </th>
+                            <th>
+                                <i class="bi bi-person"></i>
+                                البائع
+                            </th>
+                            <th>
+                                <i class="bi bi-clock"></i>
+                                التاريخ والوقت
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model.SaleHistory)
+                        {
+                            var initials = string.IsNullOrEmpty(s.CashierName) ? "?" :
+                                s.CashierName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a + b).ToUpper();
+                            var saleDate = s.SaleDate.ToLocalTime();
+                            <tr>
+                                <td>
+                                    <span class="variant-info variant-color">
+                                        <i class="bi bi-palette"></i>
+                                        @s.Color
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="variant-info variant-size">
+                                        <i class="bi bi-rulers"></i>
+                                        @s.Size
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="quantity-badge quantity-ok">@s.Quantity</span>
+                                </td>
+                                <td>
+                                    <span class="price-cell">@s.UnitSellPrice <small>ج.م</small></span>
+                                </td>
+                                <td>
+                                    <div class="cashier-name">
+                                        <span class="cashier-avatar">@initials</span>
+                                        @s.CashierName
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="date-cell">
+                                        <span class="date-main">@saleDate.ToString("yyyy-MM-dd")</span>
+                                        <span class="date-time">@saleDate.ToString("HH:mm")</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+</div>
