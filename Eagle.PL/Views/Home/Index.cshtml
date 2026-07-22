@@ -223,7 +223,7 @@
         <p class="hero-subtitle">اختر من الخيارات أدناه للبدء</p>
         <div class="user-badge">
             <i class="bi bi-person-circle"></i>
-            @(User.Identity?.Name)
+            @User.FindFirst("FullName")?.Value
         </div>
     </div>
 

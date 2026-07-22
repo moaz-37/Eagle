@@ -33,9 +33,20 @@ namespace Eagle.PL.Controllers
 
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    await _signInManager.SignInWithClaimsAsync(user, model.RememberMe, new[]
+                    {
+                new System.Security.Claims.Claim("FullName", user.FullName)
+            });
+                }
+
                 return !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
                     ? Redirect(returnUrl)
                     : RedirectToAction("Index", "Home");
+            }
 
             ModelState.AddModelError(string.Empty, "البريد الإلكتروني أو كلمة المرور غير صحيحة");
             return View(model);
