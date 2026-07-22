@@ -244,9 +244,11 @@
         color: #212529;
     }
 
-    .brand-name {
+    .brrand-name {
         color: #6c757d;
-        font-size: 0.9rem;
+        font-weight: 700;
+        font-size: 1.25rem;
+        letter-spacing: 0.5px;
     }
 
     .price-cell {
@@ -539,7 +541,7 @@
                                     <span class="product-name">@p.Name</span>
                                 </td>
                                 <td>
-                                    <span class="brand-name">@(string.IsNullOrEmpty(p.Brand) ? "—" : p.Brand)</span>
+                                    <span class="brrand-name">@(string.IsNullOrEmpty(p.Brand) ? "—" : p.Brand)</span>
                                 </td>
                                 <td>
                                     <span class="price-cell">@p.BuyPrice <small>ج.م</small></span>
