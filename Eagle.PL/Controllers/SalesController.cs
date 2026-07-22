@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Eagle.BL.DTOs;
 using Eagle.BL.Services;
+using Eagle.PL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,19 +33,6 @@ namespace Eagle.PL.Controllers
             return View((ProductLookupResult?)null);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> History(DateTime? from, DateTime? to, Guid? cashierId)
-        {
-            Guid? effectiveCashierId = cashierId;
-            if (!User.IsInRole("Manager"))
-            {
-                effectiveCashierId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            }
-
-            var records = await _saleService.GetSaleRecordsAsync(new SaleStatsFilter(from, to, effectiveCashierId));
-            return View(records);
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateSaleDto dto, string pieceCode)
@@ -64,12 +52,28 @@ namespace Eagle.PL.Controllers
             return RedirectToAction("Create");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> History(DateTime? from, DateTime? to, Guid? cashierId)
+        {
+            Guid? effectiveCashierId = cashierId;
+            if (!User.IsInRole("Manager"))
+                effectiveCashierId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var entries = await _saleService.GetTimelineAsync(new SaleStatsFilter(from, to, effectiveCashierId));
+            var vm = new TimelinePageViewModel { Entries = entries, TotalProfit = entries.Sum(e => e.ProfitAmount) };
+            return View(vm);
+        }
+
         [Authorize(Roles = "Manager")]
         [HttpGet]
         public async Task<IActionResult> Stats(DateTime? from, DateTime? to, Guid? cashierId)
         {
             var stats = await _saleService.GetStatsAsync(new SaleStatsFilter(from, to, cashierId));
-            return View(stats);
+            var overview = await _productService.GetStoreOverviewAsync();
+            overview = overview with { RealizedRevenue = stats.TotalRevenue, RealizedProfit = stats.TotalProfit };
+
+            var vm = new StatsPageViewModel { Stats = stats, Overview = overview };
+            return View(vm);
         }
     }
 }
