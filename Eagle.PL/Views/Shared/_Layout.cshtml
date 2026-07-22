@@ -55,6 +55,12 @@
                                     تسجيل بيع
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Returns" asp-action="Create">
+                                    <i class="bi bi-arrow-return-left"></i>
+                                    إرجاع قطعة
+                                </a>
+                            </li>
 
                             @if (User.IsInRole("Manager"))
                             {
