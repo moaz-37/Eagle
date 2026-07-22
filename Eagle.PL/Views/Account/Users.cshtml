@@ -1,0 +1,459 @@
+@model List<Eagle.PL.Models.UserListItemViewModel>
+@{
+    ViewData["Title"] = "المستخدمون";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-subtitle {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .badge-count {
+        background-color: #f8f9fa;
+        color: #212529;
+        font-weight: 600;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        border: 1px solid #e9ecef;
+    }
+
+    /* Add Button */
+    .btn-add {
+        background-color: #212529;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #ffffff;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-add:hover {
+        background-color: #000000;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: #fff;
+    }
+
+    /* Error Alert */
+    .alert-error {
+        background-color: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        color: #991b1b;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 500;
+    }
+
+    .alert-error i {
+        font-size: 1.25rem;
+        color: #dc2626;
+    }
+
+    /* Table Wrapper */
+    .table-wrapper {
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .table-header {
+        background-color: #f8f9fa;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .table-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Modern Table */
+    .users-table {
+        margin: 0;
+        width: 100%;
+    }
+
+    .users-table thead th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem 1.25rem;
+        border-bottom: 2px solid #e9ecef;
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    .users-table thead th i {
+        margin-left: 0.35rem;
+        color: #adb5bd;
+        font-size: 0.9rem;
+    }
+
+    .users-table tbody td {
+        padding: 1.25rem;
+        color: #212529;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #f1f3f5;
+        vertical-align: middle;
+    }
+
+    .users-table tbody tr {
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .users-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .users-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* User Cell */
+    .user-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .user-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background-color: #212529;
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+        letter-spacing: 0.5px;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    /* Email Cell */
+    .email-cell {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #495057;
+    }
+
+    .email-cell i {
+        color: #adb5bd;
+        font-size: 0.95rem;
+    }
+
+    /* Role Badge */
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .role-manager {
+        background-color: #212529;
+        color: #ffffff;
+    }
+
+    .role-cashier {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .btn-edit {
+        background-color: #ffffff;
+        border: 1.5px solid #212529;
+        border-radius: 8px;
+        padding: 0.4rem 0.9rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #212529;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .btn-edit:hover {
+        background-color: #212529;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-delete {
+        background-color: #ffffff;
+        border: 1.5px solid #dc3545;
+        border-radius: 8px;
+        padding: 0.4rem 0.9rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #dc3545;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        white-space: nowrap;
+    }
+
+    .btn-delete:hover {
+        background-color: #dc3545;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1.5rem;
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .empty-state-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: #adb5bd;
+        font-size: 2.5rem;
+    }
+
+    .empty-state h5 {
+        color: #212529;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Responsive Table */
+    .table-responsive-wrapper {
+        overflow-x: auto;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .btn-add {
+            justify-content: center;
+        }
+        .users-table thead th,
+        .users-table tbody td {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            font-size: 0.8rem;
+        }
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title-group">
+            <h2 class="form-title">
+                <i class="bi bi-people-fill"></i>
+                المستخدمون
+                <span class="badge-count">@Model.Count مستخدم</span>
+            </h2>
+            <p class="form-subtitle">إدارة حسابات الكاشير والمديرين في النظام</p>
+        </div>
+        <a asp-controller="Account" asp-action="CreateUser" class="btn-add">
+            <i class="bi bi-person-plus-fill"></i>
+            إضافة مستخدم جديد
+        </a>
+    </div>
+
+    <!-- Error Alert -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-error">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>@TempData["Error"]</span>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <h5>لا يوجد مستخدمون بعد</h5>
+            <p>ابدأ بإضافة أول مستخدم إلى النظام</p>
+            <a asp-controller="Account" asp-action="CreateUser" class="btn-add">
+                <i class="bi bi-person-plus-fill"></i>
+                إضافة مستخدم جديد
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- Users Table -->
+        <div class="table-wrapper">
+            <div class="table-header">
+                <h5 class="table-title">
+                    <i class="bi bi-list-ul"></i>
+                    قائمة المستخدمين
+                </h5>
+            </div>
+
+            <div class="table-responsive-wrapper">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="bi bi-person"></i>
+                                الاسم
+                            </th>
+                            <th>
+                                <i class="bi bi-envelope"></i>
+                                البريد الإلكتروني
+                            </th>
+                            <th>
+                                <i class="bi bi-shield-check"></i>
+                                الدور
+                            </th>
+                            <th class="text-end">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in Model)
+                        {
+                            var initials = string.IsNullOrEmpty(u.FullName) ? "?" :
+                                u.FullName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a + b).ToUpper();
+                            var roleClass = u.Role == "Manager" ? "role-manager" : "role-cashier";
+                            var roleLabel = u.Role == "Manager" ? "مدير" : "كاشير";
+                            var roleIcon = u.Role == "Manager" ? "bi-shield-fill-check" : "bi-person-badge";
+                            <tr>
+                                <td>
+                                    <div class="user-cell">
+                                        <span class="user-avatar">@initials</span>
+                                        <span class="user-name">@u.FullName</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="email-cell">
+                                        <i class="bi bi-envelope"></i>
+                                        @u.Email
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="role-badge @roleClass">
+                                        <i class="bi @roleIcon"></i>
+                                        @roleLabel
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a asp-controller="Account" asp-action="Edit" asp-route-id="@u.Id" class="btn-edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                            تعديل
+                                        </a>
+                                        <form asp-controller="Account" asp-action="Delete" asp-route-id="@u.Id" method="post"
+                                              onsubmit="return confirm('هل أنت متأكد من حذف هذا المستخدم؟');" style="display:inline;">
+                                            <button type="submit" class="btn-delete">
+                                                <i class="bi bi-trash"></i>
+                                                حذف
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
