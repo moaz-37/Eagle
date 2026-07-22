@@ -79,6 +79,28 @@ namespace Eagle.BL.Services
                 byCashier);
         }
 
+        public async Task<List<SaleRecordDto>> GetSaleHistoryForProductAsync(int productId)
+        {
+            var items = await _db.SaleItems
+                .Include(si => si.Sale).ThenInclude(s => s.User)
+                .Include(si => si.ProductVariant).ThenInclude(v => v.Product)
+                .Where(si => si.ProductVariant.ProductId == productId)
+                .OrderByDescending(si => si.Sale.SaleDate)
+                .ToListAsync();
+
+            return items.Select(si => new SaleRecordDto(
+                si.Sale.Id,
+                si.Sale.SaleDate,
+                si.ProductVariant.Product.PieceCode,
+                si.ProductVariant.Product.Name,
+                si.ProductVariant.Color,
+                si.ProductVariant.Size,
+                si.Quantity,
+                si.UnitSellPrice,
+                si.UnitSellPrice * si.Quantity,
+                si.Sale.User.FullName
+            )).ToList();
+        }
 
         public async Task<List<SaleRecordDto>> GetSaleRecordsAsync(SaleStatsFilter filter)
         {

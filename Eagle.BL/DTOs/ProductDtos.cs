@@ -22,7 +22,7 @@ namespace Eagle.BL.DTOs
 
     public record CreateProductDto
     (
-        string PieceCode, 
+        //string PieceCode, 
         string Name, 
         string? Brand, 
         decimal BuyPrice, 
@@ -35,5 +35,16 @@ namespace Eagle.BL.DTOs
         string Color, 
         string Size, 
         int StockQuantity
+    );
+
+    public record ProductDetailDto
+    (
+        int ProductId, 
+        string PieceCode, 
+        string Name, 
+        string? Brand,
+        decimal BuyPrice, decimal SellPrice, DateTime CreatedAt,
+        List<VariantDto> Variants,
+        List<SaleRecordDto> SaleHistory
     );
 }

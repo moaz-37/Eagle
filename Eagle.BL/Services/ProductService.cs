@@ -26,41 +26,90 @@ namespace Eagle.BL.Services
                     .ToList());
         }
 
-        public async Task<List<Product>> GetAllAsync() =>
-            await _db.Products.Include(p => p.Variants).OrderByDescending(p => p.CreatedAt).ToListAsync();
+        public async Task<List<Product>> GetAllAsync(string? search = null)
+        {
+            var query = _db.Products.Include(p => p.Variants).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(p => p.PieceCode.Contains(search));
+
+            return await query.OrderByDescending(p => p.CreatedAt).ToListAsync();
+        }
 
         public async Task<int> CreateAsync(CreateProductDto dto)
         {
-            if (await _db.Products.AnyAsync(p => p.PieceCode == dto.PieceCode))
-                throw new InvalidOperationException("Piece code already exists.");
+            var pieceCode = await GenerateUniquePieceCodeAsync();
 
             var product = new Product
             {
-                PieceCode = dto.PieceCode,
+                PieceCode = pieceCode,
                 Name = dto.Name,
                 Brand = dto.Brand,
                 BuyPrice = dto.BuyPrice,
-                SellPrice = dto.SellPrice
+                SellPrice = dto.SellPrice,
+                CreatedAt = DateTime.UtcNow
             };
             _db.Products.Add(product);
             await _db.SaveChangesAsync();
             return product.Id;
         }
 
-        public async Task AddVariantAsync(AddVariantDto dto)
-        {
-            var exists = await _db.ProductVariants.AnyAsync(v =>
-                v.ProductId == dto.ProductId && v.Color == dto.Color && v.Size == dto.Size);
-            if (exists) throw new InvalidOperationException("That color/size already exists for this piece.");
+        public async Task<Product?> GetByIdAsync(int id) =>
+            await _db.Products.Include(p => p.Variants).FirstOrDefaultAsync(p => p.Id == id);
 
-            _db.ProductVariants.Add(new ProductVariant
+        private async Task<string> GenerateUniquePieceCodeAsync()
+        {
+            var random = new Random();
+            string code;
+            bool exists;
+
+            do
             {
-                ProductId = dto.ProductId,
-                Color = dto.Color,
-                Size = dto.Size,
-                StockQuantity = dto.StockQuantity
-            });
+                code = random.Next(10000, 99999).ToString(); // always 5 digits, no leading zero issues
+                exists = await _db.Products.AnyAsync(p => p.PieceCode == code);
+            } while (exists);
+
+            return code;
+        }
+
+        public async Task<List<string>> GetColorsAsync(int productId) =>
+            await _db.ProductVariants
+                .Where(v => v.ProductId == productId)
+                .Select(v => v.Color)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToListAsync();
+
+        public async Task<List<VariantDto>> GetSizesForColorAsync(int productId, string color) =>
+            await _db.ProductVariants
+                .Where(v => v.ProductId == productId && v.Color == color)
+                .OrderBy(v => v.Size)
+                .Select(v => new VariantDto(v.Id, v.Color, v.Size, v.StockQuantity))
+                .ToListAsync();
+
+        public async Task AddOrIncrementVariantAsync(AddVariantDto dto)
+        {
+            var existing = await _db.ProductVariants.FirstOrDefaultAsync(v =>
+                v.ProductId == dto.ProductId && v.Color == dto.Color && v.Size == dto.Size);
+
+            if (existing != null)
+            {
+                existing.StockQuantity += dto.StockQuantity;
+            }
+            else
+            {
+                _db.ProductVariants.Add(new ProductVariant
+                {
+                    ProductId = dto.ProductId,
+                    Color = dto.Color,
+                    Size = dto.Size,
+                    StockQuantity = dto.StockQuantity
+                });
+            }
+
             await _db.SaveChangesAsync();
         }
+
+
     }
 }
