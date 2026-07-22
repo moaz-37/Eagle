@@ -1,0 +1,420 @@
+@model List<Product>
+@{
+    ViewData["Title"] = "المخزون";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-subtitle {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .badge-count {
+        background-color: #f8f9fa;
+        color: #212529;
+        font-weight: 600;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        border: 1px solid #e9ecef;
+    }
+
+    /* Add Button */
+    .btn-add {
+        background-color: #212529;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #ffffff;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-add:hover {
+        background-color: #000000;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: #fff;
+    }
+
+    /* Table Wrapper */
+    .table-wrapper {
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .table-header {
+        background-color: #f8f9fa;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .table-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Modern Table */
+    .products-table {
+        margin: 0;
+        width: 100%;
+    }
+
+    .products-table thead th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem 1.25rem;
+        border-bottom: 2px solid #e9ecef;
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    .products-table thead th i {
+        margin-left: 0.35rem;
+        color: #adb5bd;
+        font-size: 0.9rem;
+    }
+
+    .products-table tbody td {
+        padding: 1.25rem;
+        color: #212529;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #f1f3f5;
+        vertical-align: middle;
+    }
+
+    .products-table tbody tr {
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .products-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .products-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Cell Styles */
+    .piece-code {
+        font-family: 'Courier New', monospace;
+        font-weight: 600;
+        color: #212529;
+        background-color: #f8f9fa;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        display: inline-block;
+        font-size: 0.9rem;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .brand-name {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .price-cell {
+        font-weight: 600;
+        color: #212529;
+        white-space: nowrap;
+    }
+
+    .price-cell small {
+        color: #6c757d;
+        font-weight: 400;
+        font-size: 0.8rem;
+    }
+
+    .variants-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background-color: #e7f1ff;
+        color: #0d6efd;
+        padding: 0.3rem 0.7rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .stock-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.7rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .stock-ok {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .stock-low {
+        background-color: #fff3cd;
+        color: #664d03;
+    }
+
+    .stock-empty {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    /* Action Button */
+    .btn-variant {
+        background-color: #ffffff;
+        border: 1.5px solid #212529;
+        border-radius: 8px;
+        padding: 0.4rem 0.9rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #212529;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .btn-variant:hover {
+        background-color: #212529;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1.5rem;
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .empty-state-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: #adb5bd;
+        font-size: 2.5rem;
+    }
+
+    .empty-state h5 {
+        color: #212529;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Responsive Table */
+    .table-responsive-wrapper {
+        overflow-x: auto;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .btn-add {
+            justify-content: center;
+        }
+        .products-table thead th,
+        .products-table tbody td {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+        }
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title-group">
+            <h2 class="form-title">
+                <i class="bi bi-box-seam"></i>
+                المخزون
+                <span class="badge-count">@Model.Count صنف</span>
+            </h2>
+            <p class="form-subtitle">إدارة الأصناف والمنتجات المتاحة</p>
+        </div>
+        <a asp-controller="Products" asp-action="Create" class="btn-add">
+            <i class="bi bi-plus-circle"></i>
+            إضافة صنف جديد
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="bi bi-inbox"></i>
+            </div>
+            <h5>لا توجد أصناف بعد</h5>
+            <p>ابدأ بإضافة أول صنف إلى المخزون</p>
+            <a asp-controller="Products" asp-action="Create" class="btn-add">
+                <i class="bi bi-plus-circle"></i>
+                إضافة صنف جديد
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- Products Table -->
+        <div class="table-wrapper">
+            <div class="table-header">
+                <h5 class="table-title">
+                    <i class="bi bi-list-ul"></i>
+                    قائمة الأصناف
+                </h5>
+            </div>
+
+            <div class="table-responsive-wrapper">
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="bi bi-upc-scan"></i>
+                                كود الصنف
+                            </th>
+                            <th>
+                                <i class="bi bi-box-seam"></i>
+                                الاسم
+                            </th>
+                            <th>
+                                <i class="bi bi-award"></i>
+                                الماركة
+                            </th>
+                            <th>
+                                <i class="bi bi-cart-check"></i>
+                                سعر الشراء
+                            </th>
+                            <th>
+                                <i class="bi bi-tag-fill"></i>
+                                سعر البيع
+                            </th>
+                            <th>
+                                <i class="bi bi-palette"></i>
+                                الألوان/المقاسات
+                            </th>
+                            <th>
+                                <i class="bi bi-boxes"></i>
+                                إجمالي الكمية
+                            </th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model)
+                        {
+                            var totalStock = p.Variants.Sum(v => v.StockQuantity);
+                            var stockClass = totalStock == 0 ? "stock-empty" :
+                                             totalStock <= 5 ? "stock-low" : "stock-ok";
+                            <tr>
+                                <td>
+                                    <span class="piece-code">@p.PieceCode</span>
+                                </td>
+                                <td>
+                                    <span class="product-name">@p.Name</span>
+                                </td>
+                                <td>
+                                    <span class="brand-name">@(string.IsNullOrEmpty(p.Brand) ? "—" : p.Brand)</span>
+                                </td>
+                                <td>
+                                    <span class="price-cell">@p.BuyPrice <small>ج.م</small></span>
+                                </td>
+                                <td>
+                                    <span class="price-cell">@p.SellPrice <small>ج.م</small></span>
+                                </td>
+                                <td>
+                                    <span class="variants-count">
+                                        <i class="bi bi-palette"></i>
+                                        @p.Variants.Count
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="stock-badge @stockClass">
+                                        <i class="bi bi-boxes"></i>
+                                        @totalStock
+                                    </span>
+                                </td>
+                                <td>
+                                    <a asp-controller="Products" asp-action="AddVariant"
+                                       asp-route-productId="@p.Id" class="btn-variant">
+                                        <i class="bi bi-plus-circle"></i>
+                                        إضافة لون/مقاس
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>

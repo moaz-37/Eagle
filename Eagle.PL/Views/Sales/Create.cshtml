@@ -1,40 +1,291 @@
 @model Eagle.BL.DTOs.ProductLookupResult?
-<h3>تسجيل عملية بيع</h3>
-<div asp-validation-summary="All" class="text-danger"></div>
+@{
+    ViewData["Title"] = "تسجيل عملية بيع";
+}
 
-<form method="get" class="d-flex gap-2 mb-4" style="max-width:400px;">
-    <input type="text" name="pieceCode" class="form-control" placeholder="كود الصنف" value="@ViewBag.PieceCode" required />
-    <button class="btn btn-outline-dark">بحث</button>
-</form>
+<style>
+    .form-card {
+        border: none;
+        border-radius: 16px;
+        background-color: #ffffff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        padding: 2.5rem;
+        width: 100%;
+        margin-bottom: 2rem;
+    }
 
-@if (Model != null)
-{
-    <div class="card p-3 mb-3" style="max-width:500px;">
-        <h5>@Model.Name (@Model.PieceCode)</h5>
-        <p class="text-muted mb-1">الماركة: @Model.Brand</p>
-        <p class="mb-1">سعر الشراء: @Model.BuyPrice</p>
-        <p class="mb-3">سعر البيع المقترح: @Model.SellPrice</p>
+    .logo-wrapper {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        <form asp-action="Create" method="post">
-            @Html.Hidden("pieceCode", Model.PieceCode)
-            <div class="mb-2">
-                <label class="form-label">اللون / المقاس</label>
-                <select name="ProductVariantId" class="form-select" required>
-                    @foreach (var v in Model.Variants.Where(v => v.StockQuantity > 0))
-                    {
-                        <option value="@v.VariantId">@v.Color - @v.Size (متاح: @v.StockQuantity)</option>
-                    }
-                </select>
+    .logo-wrapper img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .form-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .form-subtitle {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+        margin-bottom: 1.25rem;
+    }
+
+    .input-wrapper .form-control,
+    .input-wrapper .form-select {
+        border-radius: 10px;
+        border: 1.5px solid #e9ecef;
+        padding: 12px 45px 12px 15px;
+        font-size: 0.95rem;
+        background-color: #fdfdfd;
+        transition: all 0.2s ease-in-out;
+        height: auto;
+        width: 100%;
+    }
+
+    .input-wrapper .form-control:focus,
+    .input-wrapper .form-select:focus {
+        border-color: #212529;
+        box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.1);
+        background-color: #ffffff;
+    }
+
+    .input-wrapper .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        font-size: 1.15rem;
+        pointer-events: none;
+        transition: color 0.2s ease-in-out;
+        z-index: 5;
+    }
+
+    .input-wrapper:focus-within .input-icon {
+        color: #212529;
+    }
+
+    /* Search form specific - icon on left for search button */
+    .search-wrapper {
+        position: relative;
+        margin-bottom: 0;
+    }
+
+    .search-wrapper .form-control {
+        border-radius: 10px;
+        border: 1.5px solid #e9ecef;
+        padding: 12px 45px 12px 15px;
+        font-size: 0.95rem;
+        background-color: #fdfdfd;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .search-wrapper .form-control:focus {
+        border-color: #212529;
+        box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.1);
+        background-color: #ffffff;
+    }
+
+    .search-wrapper .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        font-size: 1.15rem;
+        pointer-events: none;
+    }
+
+    .search-wrapper:focus-within .input-icon {
+        color: #212529;
+    }
+
+    /* Buttons */
+    .btn-search {
+        background-color: #ffffff;
+        border: 1.5px solid #212529;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-weight: 600;
+        font-size: 1rem;
+        color: #212529;
+        transition: all 0.2s ease-in-out;
+        white-space: nowrap;
+    }
+
+    .btn-search:hover {
+        background-color: #212529;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-confirm {
+        background-color: #198754;
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-confirm:hover {
+        background-color: #146c43;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+        color: #fff;
+    }
+
+    .btn-confirm:active {
+        transform: translateY(0);
+    }
+
+    /* Product details card */
+    .product-details {
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .product-name {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .product-info {
+        color: #495057;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-info strong {
+        color: #212529;
+        font-weight: 600;
+    }
+
+    .text-danger {
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <!-- Search Card -->
+            <div class="form-card">
+                <!-- Logo -->
+                <div class="logo-wrapper">
+                    <img src="~/images/Eagle.png" alt="Eagle Logo" />
+                </div>
+
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <h2 class="form-title">تسجيل عملية بيع</h2>
+                    <p class="form-subtitle">ابحث عن الصنف باستخدام كوده</p>
+                </div>
+
+                <!-- Search Form -->
+                <form method="get">
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    
+                    <div class="d-flex gap-2">
+                        <div class="search-wrapper flex-grow-1">
+                            <input type="text" name="pieceCode" class="form-control" placeholder="كود الصنف" value="@ViewBag.PieceCode" required />
+                            <i class="bi bi-upc-scan input-icon"></i>
+                        </div>
+                        <button type="submit" class="btn btn-search">
+                            <i class="bi bi-search"></i> بحث
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="mb-2">
-                <label class="form-label">الكمية</label>
-                <input type="number" name="Quantity" class="form-control" min="1" value="1" required />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">سعر البيع</label>
-                <input type="number" step="0.01" name="UnitSellPrice" class="form-control" value="@Model.SellPrice" required />
-            </div>
-            <button class="btn btn-success w-100">تأكيد البيع</button>
-        </form>
+
+            @if (Model != null)
+            {
+                <!-- Product Details & Sales Form Card -->
+                <div class="form-card">
+                    <!-- Product Details -->
+                    <div class="product-details">
+                        <h5 class="product-name">@Model.Name (@Model.PieceCode)</h5>
+                        <p class="product-info"><strong>الماركة:</strong> @Model.Brand</p>
+                        <p class="product-info"><strong>سعر الشراء:</strong> @Model.BuyPrice</p>
+                        <p class="product-info mb-0"><strong>سعر البيع المقترح:</strong> @Model.SellPrice</p>
+                    </div>
+
+                    <!-- Sales Form -->
+                    <form asp-action="Create" method="post">
+                        @Html.Hidden("pieceCode", Model.PieceCode)
+
+                        <!-- Product Variant -->
+                        <label class="form-label">اللون / المقاس</label>
+                        <div class="input-wrapper">
+                            <select name="ProductVariantId" class="form-select" required>
+                                @foreach (var v in Model.Variants.Where(v => v.StockQuantity > 0))
+                                {
+                                    <option value="@v.VariantId">@v.Color - @v.Size (متاح: @v.StockQuantity)</option>
+                                }
+                            </select>
+                            <i class="bi bi-palette2 input-icon"></i>
+                        </div>
+
+                        <!-- Quantity -->
+                        <label class="form-label">الكمية</label>
+                        <div class="input-wrapper">
+                            <input type="number" name="Quantity" class="form-control" min="1" value="1" required />
+                            <i class="bi bi-boxes input-icon"></i>
+                        </div>
+
+                        <!-- Unit Sell Price -->
+                        <label class="form-label">سعر البيع</label>
+                        <div class="input-wrapper">
+                            <input type="number" step="0.01" name="UnitSellPrice" class="form-control" value="@Model.SellPrice" required />
+                            <i class="bi bi-tag-fill input-icon"></i>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-confirm w-100 mt-3">
+                            <i class="bi bi-check-circle"></i> تأكيد البيع
+                        </button>
+                    </form>
+                </div>
+            }
+
+        </div>
     </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }

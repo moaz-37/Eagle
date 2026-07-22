@@ -1,8 +1,281 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "الرئيسية";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    /* Hero Section */
+    .hero-section {
+        text-align: center;
+        padding: 3rem 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .hero-logo-wrapper {
+        width: 140px;
+        height: 140px;
+        margin: 0 auto 2rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .hero-logo-wrapper:hover {
+        transform: scale(1.05);
+    }
+
+    .hero-logo-wrapper img {
+        width: 90px;
+        height: 90px;
+        object-fit: contain;
+    }
+
+    .hero-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-subtitle {
+        color: #6c757d;
+        font-size: 1.05rem;
+        margin: 0;
+    }
+
+    .user-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 30px;
+        padding: 0.5rem 1.25rem;
+        margin-top: 1.5rem;
+        font-weight: 600;
+        color: #212529;
+        font-size: 0.95rem;
+    }
+
+    .user-badge i {
+        color: #212529;
+        font-size: 1.1rem;
+    }
+
+    /* Section Title */
+    .section-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: #212529;
+        font-size: 1.3rem;
+    }
+
+    /* Action Cards */
+    .action-card {
+        background-color: #ffffff;
+        border: none;
+        border-radius: 16px;
+        padding: 2rem 1.5rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease-in-out;
+        height: 100%;
+        text-decoration: none;
+        display: block;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    .action-card:hover .action-icon {
+        transform: scale(1.1);
+    }
+
+    .action-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 16px;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.25rem;
+        color: #212529;
+        font-size: 2rem;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .action-card-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.15rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .action-card-desc {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .action-card-arrow {
+        position: absolute;
+        left: 1.5rem;
+        bottom: 1.5rem;
+        color: #adb5bd;
+        font-size: 1.25rem;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .action-card:hover .action-card-arrow {
+        color: #212529;
+        transform: translateX(-4px);
+    }
+
+    /* Manager Badge */
+    .manager-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background-color: #212529;
+        color: #ffffff;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.25rem 0.6rem;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Dark variant for primary action */
+    .action-card-dark {
+        background-color: #212529;
+        color: #ffffff;
+    }
+
+    .action-card-dark:hover {
+        background-color: #000000;
+    }
+
+    .action-card-dark .action-icon {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+    }
+
+    .action-card-dark .action-card-title {
+        color: #ffffff;
+    }
+
+    .action-card-dark .action-card-desc {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .action-card-dark .action-card-arrow {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .action-card-dark:hover .action-card-arrow {
+        color: #ffffff;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .hero-title {
+            font-size: 1.5rem;
+        }
+        .hero-logo-wrapper {
+            width: 120px;
+            height: 120px;
+        }
+        .hero-logo-wrapper img {
+            width: 75px;
+            height: 75px;
+        }
+        .action-card {
+            padding: 1.5rem 1.25rem;
+        }
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-logo-wrapper">
+            <img src="~/images/Eagle.png" alt="Eagle Logo" />
+        </div>
+        <h2 class="hero-title">مرحباً بك 👋</h2>
+        <p class="hero-subtitle">اختر من الخيارات أدناه للبدء</p>
+        <div class="user-badge">
+            <i class="bi bi-person-circle"></i>
+            @(User.Identity?.Name)
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mb-4">
+        <h3 class="section-title">
+            <i class="bi bi-lightning-charge-fill"></i>
+            الإجراءات السريعة
+        </h3>
+
+        <div class="row g-3">
+            <!-- Record Sale (Primary Action) -->
+            <div class="col-md-6 col-lg-4">
+                <a asp-controller="Sales" asp-action="Create" class="action-card action-card-dark">
+                    <div class="action-icon">
+                        <i class="bi bi-cart-check-fill"></i>
+                    </div>
+                    <h5 class="action-card-title">تسجيل بيع</h5>
+                    <p class="action-card-desc">إدخال عملية بيع جديدة وتسجيلها في النظام</p>
+                    <i class="bi bi-arrow-left action-card-arrow"></i>
+                </a>
+            </div>
+
+            @if (User.IsInRole("Manager"))
+            {
+                <!-- Inventory -->
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Products" asp-action="Index" class="action-card">
+                        <span class="manager-badge">مدير</span>
+                        <div class="action-icon">
+                            <i class="bi bi-box-seam-fill"></i>
+                        </div>
+                        <h5 class="action-card-title">المخزون</h5>
+                        <p class="action-card-desc">إدارة الأصناف وإضافة ألوان ومقاسات جديدة</p>
+                        <i class="bi bi-arrow-left action-card-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Sales Stats -->
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Sales" asp-action="Stats" class="action-card">
+                        <span class="manager-badge">مدير</span>
+                        <div class="action-icon">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <h5 class="action-card-title">إحصائيات المبيعات</h5>
+                        <p class="action-card-desc">عرض وتحليل أداء المبيعات والأرباح</p>
+                        <i class="bi bi-arrow-left action-card-arrow"></i>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
 </div>

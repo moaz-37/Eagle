@@ -1,0 +1,193 @@
+@model CreateProductDto
+@{
+    ViewData["Title"] = "إضافة صنف";
+}
+
+<style>
+    .form-card {
+        border: none;
+        border-radius: 16px;
+        background-color: #ffffff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        padding: 2.5rem;
+        width: 100%;
+    }
+
+    .logo-wrapper {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logo-wrapper img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .form-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .form-subtitle {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+        margin-bottom: 1.25rem;
+    }
+
+    .input-wrapper .form-control,
+    .input-wrapper .form-select {
+        border-radius: 10px;
+        border: 1.5px solid #e9ecef;
+        padding: 12px 45px 12px 15px;
+        font-size: 0.95rem;
+        background-color: #fdfdfd;
+        transition: all 0.2s ease-in-out;
+        height: auto;
+        width: 100%;
+    }
+
+    .input-wrapper .form-control:focus,
+    .input-wrapper .form-select:focus {
+        border-color: #212529;
+        box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.1);
+        background-color: #ffffff;
+    }
+
+    .input-wrapper .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        font-size: 1.15rem;
+        pointer-events: none;
+        transition: color 0.2s ease-in-out;
+        z-index: 5;
+    }
+
+    .input-wrapper:focus-within .input-icon {
+        color: #212529;
+    }
+
+    .btn-submit {
+        background-color: #212529;
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-submit:hover {
+        background-color: #000000;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: #fff;
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    .text-danger {
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="form-card">
+
+                <!-- Logo -->
+                <div class="logo-wrapper">
+                    <img src="~/images/Eagle.png" alt="Eagle Logo" />
+                </div>
+
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <h2 class="form-title">إضافة صنف جديد</h2>
+                    <p class="form-subtitle">أدخل بيانات الصنف لإضافته إلى المخزون</p>
+                </div>
+
+                <!-- Form -->
+                <form asp-controller="Products" asp-action="Create" method="post">
+
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    <!-- Piece Code -->
+                    <label class="form-label">كود الصنف</label>
+                    <div class="input-wrapper">
+                        <input asp-for="PieceCode" class="form-control" placeholder="مثال: PRD-001" required />
+                        <i class="bi bi-upc-scan input-icon"></i>
+                    </div>
+                    <span asp-validation-for="PieceCode" class="text-danger"></span>
+
+                    <!-- Name -->
+                    <label class="form-label">اسم الصنف</label>
+                    <div class="input-wrapper">
+                        <input asp-for="Name" class="form-control" placeholder="اسم الصنف" required />
+                        <i class="bi bi-box-seam input-icon"></i>
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+
+                    <!-- Brand -->
+                    <label class="form-label">الماركة</label>
+                    <div class="input-wrapper">
+                        <input asp-for="Brand" class="form-control" placeholder="الماركة" />
+                        <i class="bi bi-award input-icon"></i>
+                    </div>
+                    <span asp-validation-for="Brand" class="text-danger"></span>
+
+                    <!-- Buy Price -->
+                    <label class="form-label">سعر الشراء</label>
+                    <div class="input-wrapper">
+                        <input asp-for="BuyPrice" type="number" step="0.01" class="form-control" placeholder="0.00" required />
+                        <i class="bi bi-cart-check input-icon"></i>
+                    </div>
+                    <span asp-validation-for="BuyPrice" class="text-danger"></span>
+
+                    <!-- Sell Price -->
+                    <label class="form-label">سعر البيع المقترح</label>
+                    <div class="input-wrapper">
+                        <input asp-for="SellPrice" type="number" step="0.01" class="form-control" placeholder="0.00" required />
+                        <i class="bi bi-tag-fill input-icon"></i>
+                    </div>
+                    <span asp-validation-for="SellPrice" class="text-danger"></span>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-dark btn-submit w-100 mt-3">
+                        حفظ ومتابعة إضافة الألوان/المقاسات
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

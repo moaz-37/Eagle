@@ -1,0 +1,385 @@
+@model Eagle.BL.DTOs.SaleStatsSummary
+@{
+    ViewData["Title"] = "إحصائيات المبيعات";
+}
+
+<style>
+    .stats-card {
+        border: none;
+        border-radius: 16px;
+        background-color: #ffffff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        padding: 2rem;
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+
+    .form-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .form-subtitle {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Filter Form */
+    .filter-form {
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+        margin-bottom: 0;
+    }
+
+    .input-wrapper .form-control {
+        border-radius: 10px;
+        border: 1.5px solid #e9ecef;
+        padding: 10px 40px 10px 15px;
+        font-size: 0.95rem;
+        background-color: #ffffff;
+        transition: all 0.2s ease-in-out;
+        height: auto;
+        width: 100%;
+    }
+
+    .input-wrapper .form-control:focus {
+        border-color: #212529;
+        box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.1);
+        background-color: #ffffff;
+    }
+
+    .input-wrapper .input-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        font-size: 1.1rem;
+        pointer-events: none;
+        transition: color 0.2s ease-in-out;
+        z-index: 5;
+    }
+
+    .input-wrapper:focus-within .input-icon {
+        color: #212529;
+    }
+
+    .btn-filter {
+        background-color: #212529;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 24px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #ffffff;
+        transition: all 0.2s ease-in-out;
+        white-space: nowrap;
+        height: 100%;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-filter:hover {
+        background-color: #000000;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: #fff;
+    }
+
+    /* KPI Cards */
+    .kpi-card {
+        background-color: #ffffff;
+        border: none;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease-in-out;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    }
+
+    .kpi-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        color: #212529;
+        font-size: 1.5rem;
+    }
+
+    .kpi-label {
+        color: #6c757d;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .kpi-value {
+        color: #212529;
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1;
+    }
+
+    /* Table */
+    .stats-table-wrapper {
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .table-header {
+        background-color: #f8f9fa;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .table-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .stats-table {
+        margin: 0;
+        width: 100%;
+    }
+
+    .stats-table thead th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem 1.5rem;
+        border-bottom: 2px solid #e9ecef;
+        border-top: none;
+    }
+
+    .stats-table tbody td {
+        padding: 1.25rem 1.5rem;
+        color: #212529;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #f1f3f5;
+        vertical-align: middle;
+    }
+
+    .stats-table tbody tr {
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .stats-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .stats-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .cashier-name {
+        font-weight: 600;
+        color: #212529;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .cashier-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #212529;
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1.5rem;
+        color: #6c757d;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #adb5bd;
+        margin-bottom: 1rem;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .kpi-value {
+            font-size: 1.5rem;
+        }
+        .stats-table thead th,
+        .stats-table tbody td {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+        }
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="form-title">إحصائيات المبيعات</h2>
+        <p class="form-subtitle">عرض وتحليل أداء المبيعات حسب الفترة الزمنية</p>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="stats-card">
+        <form method="get">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">من تاريخ</label>
+                    <div class="input-wrapper">
+                        <input type="date" name="from" class="form-control" value="@Context.Request.Query["from"]" />
+                        <i class="bi bi-calendar-event input-icon"></i>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">إلى تاريخ</label>
+                    <div class="input-wrapper">
+                        <input type="date" name="to" class="form-control" value="@Context.Request.Query["to"]" />
+                        <i class="bi bi-calendar-event input-icon"></i>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-filter w-100">
+                        <i class="bi bi-funnel"></i> تصفية
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-receipt"></i>
+                </div>
+                <div class="kpi-label">عدد العمليات</div>
+                <h4 class="kpi-value">@Model.SalesCount</h4>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <div class="kpi-label">القطع المباعة</div>
+                <h4 class="kpi-value">@Model.PiecesSold</h4>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+                <div class="kpi-label">إجمالي المبيعات</div>
+                <h4 class="kpi-value">@Model.TotalRevenue</h4>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <div class="kpi-label">صافي الربح</div>
+                <h4 class="kpi-value">@Model.TotalProfit</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cashiers Table -->
+    <div class="stats-table-wrapper">
+        <div class="table-header">
+            <h5 class="table-title">
+                <i class="bi bi-people-fill"></i>
+                أداء الكاشير
+            </h5>
+        </div>
+
+        @if (Model.ByCashier != null && Model.ByCashier.Any())
+        {
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>الكاشير</th>
+                        <th>عدد العمليات</th>
+                        <th>المبيعات</th>
+                        <th>الربح</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model.ByCashier)
+                    {
+                        var initials = string.IsNullOrEmpty(c.CashierName) ? "?" :
+                            c.CashierName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a + b).ToUpper();
+                        <tr>
+                            <td>
+                                <div class="cashier-name">
+                                    <span class="cashier-avatar">@initials</span>
+                                    @c.CashierName
+                                </div>
+                            </td>
+                            <td><strong>@c.SalesCount</strong></td>
+                            <td>@c.Revenue</td>
+                            <td>@c.Profit</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p class="mb-0">لا توجد بيانات مبيعات للفترة المحددة</p>
+            </div>
+        }
+    </div>
+
+</div>

@@ -1,0 +1,203 @@
+@model AddVariantDto
+@{
+    ViewData["Title"] = "إضافة لون/مقاس";
+}
+
+<style>
+    .form-card {
+        border: none;
+        border-radius: 16px;
+        background-color: #ffffff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        padding: 2.5rem;
+        width: 100%;
+    }
+
+    .logo-wrapper {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logo-wrapper img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .form-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .form-subtitle {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+        margin-bottom: 1.25rem;
+    }
+
+    .input-wrapper .form-control,
+    .input-wrapper .form-select {
+        border-radius: 10px;
+        border: 1.5px solid #e9ecef;
+        padding: 12px 45px 12px 15px;
+        font-size: 0.95rem;
+        background-color: #fdfdfd;
+        transition: all 0.2s ease-in-out;
+        height: auto;
+        width: 100%;
+    }
+
+    .input-wrapper .form-control:focus,
+    .input-wrapper .form-select:focus {
+        border-color: #212529;
+        box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.1);
+        background-color: #ffffff;
+    }
+
+    .input-wrapper .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        font-size: 1.15rem;
+        pointer-events: none;
+        transition: color 0.2s ease-in-out;
+        z-index: 5;
+    }
+
+    .input-wrapper:focus-within .input-icon {
+        color: #212529;
+    }
+
+    .btn-submit {
+        background-color: #212529;
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-submit:hover {
+        background-color: #000000;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: #fff;
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    .btn-back {
+        color: #6c757d;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .btn-back:hover {
+        color: #212529;
+    }
+
+    .text-danger {
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="form-card">
+
+                <!-- Logo -->
+                <div class="logo-wrapper">
+                    <img src="~/images/Eagle.png" alt="Eagle Logo" />
+                </div>
+
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <h2 class="form-title">إضافة لون / مقاس</h2>
+                    <p class="form-subtitle">أضف الألوان والمقاسات المتاحة لهذا الصنف</p>
+                </div>
+
+                <!-- Form -->
+                <form asp-controller="Products" asp-action="AddVariant" method="post">
+
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    <!-- Hidden ProductId -->
+                    <input type="hidden" asp-for="ProductId" />
+
+                    <!-- Color -->
+                    <label class="form-label">اللون</label>
+                    <div class="input-wrapper">
+                        <input asp-for="Color" class="form-control" placeholder="مثال: أحمر، أزرق" required />
+                        <i class="bi bi-palette input-icon"></i>
+                    </div>
+                    <span asp-validation-for="Color" class="text-danger"></span>
+
+                    <!-- Size -->
+                    <label class="form-label">المقاس</label>
+                    <div class="input-wrapper">
+                        <input asp-for="Size" class="form-control" placeholder="مثال: S, M, L, 42" required />
+                        <i class="bi bi-rulers input-icon"></i>
+                    </div>
+                    <span asp-validation-for="Size" class="text-danger"></span>
+
+                    <!-- Stock Quantity -->
+                    <label class="form-label">الكمية</label>
+                    <div class="input-wrapper">
+                        <input asp-for="StockQuantity" type="number" min="0" class="form-control" placeholder="0" required />
+                        <i class="bi bi-boxes input-icon"></i>
+                    </div>
+                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-dark btn-submit w-100 mt-3">
+                        إضافة
+                    </button>
+                </form>
+
+                <!-- Back Link -->
+                <div class="text-center">
+                    <a asp-controller="Products" asp-action="Index" class="btn-back">
+                        <i class="bi bi-arrow-right"></i>
+                        العودة إلى المخزون
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
