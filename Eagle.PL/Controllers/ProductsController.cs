@@ -1,5 +1,6 @@
 using Eagle.BL.DTOs;
 using Eagle.BL.Services;
+using Eagle.PL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,48 +10,81 @@ namespace Eagle.PL.Controllers
     public class ProductsController : Controller
     {
         private readonly ProductService _productService;
-        public ProductsController(ProductService productService) => _productService = productService;
+        private readonly SaleService _saleService;
 
-        public async Task<IActionResult> Index() => View(await _productService.GetAllAsync());
+        public ProductsController(ProductService productService, SaleService saleService)
+        {
+            _productService = productService;
+            _saleService = saleService;
+        }
+
+        public async Task<IActionResult> Index(string? search)
+        {
+            ViewBag.Search = search;
+            return View(await _productService.GetAllAsync(search));
+        }
 
         [HttpGet]
-        public IActionResult Create() => View(new CreateProductDto("", "", null, 0, 0));
+        public IActionResult Create() => View(new CreateProductDto("", null, 0, 0));
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateProductDto dto)
         {
             if (!ModelState.IsValid) return View(dto);
-            try
-            {
-                var id = await _productService.CreateAsync(dto);
-                return RedirectToAction("AddVariant", new { productId = id });
-            }
-            catch (InvalidOperationException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(dto);
-            }
+
+            var id = await _productService.CreateAsync(dto);
+            var product = await _productService.GetByIdAsync(id);
+            TempData["Success"] = $"تم إنشاء الصنف بنجاح - كود الصنف: {product!.PieceCode}";
+            return RedirectToAction("AddVariant", new { productId = id });
         }
 
         [HttpGet]
-        public IActionResult AddVariant(int productId) => View(new AddVariantDto(productId, "", "", 0));
+        public async Task<IActionResult> AddVariant(int productId, string? color, bool newColor = false)
+        {
+            var product = await _productService.GetByIdAsync(productId);
+            if (product is null) return NotFound();
+
+            var vm = new AddVariantPageViewModel
+            {
+                ProductId = productId,
+                ProductName = product.Name,
+                PieceCode = product.PieceCode,
+                Colors = await _productService.GetColorsAsync(productId),
+                SelectedColor = color,
+                ShowNewColorForm = newColor
+            };
+
+            if (!string.IsNullOrWhiteSpace(color))
+                vm.SizesForColor = await _productService.GetSizesForColorAsync(productId, color);
+
+            return View(vm);
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddVariant(AddVariantDto dto)
         {
-            try
-            {
-                await _productService.AddVariantAsync(dto);
-                TempData["Success"] = "تمت إضافة اللون/المقاس بنجاح";
-                return RedirectToAction("AddVariant", new { productId = dto.ProductId });
-            }
-            catch (InvalidOperationException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(dto);
-            }
+            await _productService.AddOrIncrementVariantAsync(dto);
+            TempData["Success"] = "تم تحديث الكمية بنجاح";
+            return RedirectToAction("AddVariant", new { productId = dto.ProductId, color = dto.Color });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var product = await _productService.GetByIdAsync(id);
+            if (product is null) return NotFound();
+
+            var history = await _saleService.GetSaleHistoryForProductAsync(id);
+
+            var detail = new ProductDetailDto(
+                product.Id, product.PieceCode, product.Name, product.Brand,
+                product.BuyPrice, product.SellPrice, product.CreatedAt,
+                product.Variants.Select(v => new VariantDto(v.Id, v.Color, v.Size, v.StockQuantity)).ToList(),
+                history);
+
+            return View(detail);
         }
     }
 }
