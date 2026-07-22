@@ -1,21 +1,11 @@
-@model List<Eagle.BL.DTOs.SaleRecordDto>
+@model Eagle.PL.Models.TimelinePageViewModel
 @{
-    ViewData["Title"] = "سجل عمليات البيع";
+    ViewData["Title"] = "سجل العمليات";
 }
 
 <style>
     .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .page-title-group {
-        display: flex;
-        flex-direction: column;
     }
 
     .form-title {
@@ -32,16 +22,6 @@
         color: #6c757d;
         font-size: 0.95rem;
         margin: 0;
-    }
-
-    .badge-count {
-        background-color: #f8f9fa;
-        color: #212529;
-        font-weight: 600;
-        padding: 0.35rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        border: 1px solid #e9ecef;
     }
 
     /* Filter Form */
@@ -158,6 +138,99 @@
         color: #212529;
     }
 
+    /* Profit Summary Card */
+    .profit-summary {
+        background-color: #ffffff;
+        border: none;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        margin-bottom: 2rem;
+        max-width: 340px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profit-summary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 4px;
+        height: 100%;
+        background-color: #198754;
+    }
+
+    .profit-summary.profit-negative::before {
+        background-color: #dc3545;
+    }
+
+    .profit-summary-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        color: #212529;
+        font-size: 1.5rem;
+    }
+
+    .profit-summary-label {
+        color: #6c757d;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .profit-summary-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .profit-summary-value small {
+        color: #6c757d;
+        font-weight: 400;
+        font-size: 0.9rem;
+    }
+
+    .profit-positive {
+        color: #0f5132;
+    }
+
+    .profit-negative {
+        color: #842029;
+    }
+
+    .profit-trend {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.25rem 0.6rem;
+        border-radius: 20px;
+    }
+
+    .trend-up {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .trend-down {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
     /* Table Wrapper */
     .table-wrapper {
         background-color: #ffffff;
@@ -187,24 +260,22 @@
         gap: 0.5rem;
     }
 
-    .table-total {
-        color: #6c757d;
-        font-size: 0.9rem;
-        font-weight: 500;
-    }
-
-    .table-total strong {
-        color: #212529;
-        font-weight: 700;
+    .table-count {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+        font-weight: 600;
+        padding: 0.3rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
     }
 
     /* Modern Table */
-    .sales-table {
+    .timeline-table {
         margin: 0;
         width: 100%;
     }
 
-    .sales-table thead th {
+    .timeline-table thead th {
         background-color: #f8f9fa;
         color: #495057;
         font-weight: 600;
@@ -217,13 +288,13 @@
         white-space: nowrap;
     }
 
-    .sales-table thead th i {
+    .timeline-table thead th i {
         margin-left: 0.35rem;
         color: #adb5bd;
         font-size: 0.9rem;
     }
 
-    .sales-table tbody td {
+    .timeline-table tbody td {
         padding: 1.15rem 1.25rem;
         color: #212529;
         font-size: 0.95rem;
@@ -231,19 +302,40 @@
         vertical-align: middle;
     }
 
-    .sales-table tbody tr {
+    .timeline-table tbody tr {
         transition: background-color 0.2s ease-in-out;
     }
 
-    .sales-table tbody tr:hover {
+    .timeline-table tbody tr:hover {
         background-color: #f8f9fa;
     }
 
-    .sales-table tbody tr:last-child td {
+    .timeline-table tbody tr:last-child td {
         border-bottom: none;
     }
 
-    /* Cell Styles */
+    /* Type Badge */
+    .type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .type-sale {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .type-return {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    /* Piece Code */
     .piece-code {
         font-family: 'Courier New', monospace;
         font-weight: 600;
@@ -260,6 +352,7 @@
         color: #212529;
     }
 
+    /* Variant Info */
     .variant-info {
         display: inline-flex;
         align-items: center;
@@ -280,6 +373,7 @@
         color: #7c3aed;
     }
 
+    /* Quantity */
     .quantity-badge {
         display: inline-flex;
         align-items: center;
@@ -294,12 +388,7 @@
         border: 1px solid #e9ecef;
     }
 
-    .quantity-high {
-        background-color: #d1e7dd;
-        color: #0f5132;
-        border-color: #badbcc;
-    }
-
+    /* Price */
     .price-cell {
         font-weight: 600;
         color: #212529;
@@ -312,24 +401,34 @@
         font-size: 0.8rem;
     }
 
-    .total-cell {
+    /* Profit Cell */
+    .profit-cell {
         font-weight: 700;
-        color: #0f5132;
         white-space: nowrap;
-        background-color: #d1e7dd;
         padding: 0.35rem 0.75rem;
         border-radius: 8px;
         display: inline-block;
     }
 
-    .cashier-name {
+    .profit-positive-cell {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .profit-negative-cell {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    /* Person */
+    .person-name {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         font-weight: 500;
     }
 
-    .cashier-avatar {
+    .person-avatar {
         width: 32px;
         height: 32px;
         border-radius: 50%;
@@ -343,6 +442,7 @@
         flex-shrink: 0;
     }
 
+    /* Date */
     .date-cell {
         display: inline-flex;
         flex-direction: column;
@@ -364,9 +464,7 @@
     .empty-state {
         text-align: center;
         padding: 4rem 1.5rem;
-        background-color: #ffffff;
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        color: #6c757d;
     }
 
     .empty-state-icon {
@@ -390,7 +488,7 @@
 
     .empty-state p {
         color: #6c757d;
-        margin-bottom: 0;
+        margin: 0;
     }
 
     /* Responsive Table */
@@ -400,17 +498,18 @@
 
     /* Responsive */
     @@media (max-width: 768px) {
-        .page-header {
-            flex-direction: column;
-            align-items: stretch;
-        }
-        .sales-table thead th,
-        .sales-table tbody td {
+        .timeline-table thead th,
+        .timeline-table tbody td {
             padding: 0.75rem 1rem;
             font-size: 0.85rem;
         }
-        .cashier-avatar {
+
+        .person-avatar {
             display: none;
+        }
+
+        .profit-summary {
+            max-width: 100%;
         }
     }
 </style>
@@ -419,54 +518,41 @@
 
     <!-- Page Header -->
     <div class="page-header">
-        <div class="page-title-group">
-            <h2 class="form-title">
-                <i class="bi bi-receipt"></i>
-                سجل عمليات البيع
-                <span class="badge-count">@Model.Count عملية</span>
-            </h2>
-            <p class="form-subtitle">عرض جميع عمليات البيع المسجلة في النظام</p>
-        </div>
+        <h2 class="form-title">
+            <i class="bi bi-clock-history"></i>
+            سجل العمليات
+        </h2>
+        <p class="form-subtitle">عرض جميع عمليات البيع والإرجاع مع التفاصيل الكاملة</p>
     </div>
 
     <!-- Filter Form -->
     <div class="filter-form">
         <h5 class="filter-title">
             <i class="bi bi-funnel-fill"></i>
-            تصفية النتائج
+            تصفية حسب الفترة الزمنية
         </h5>
         <form method="get">
             <div class="row g-3 align-items-end">
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label class="form-label">من تاريخ</label>
                     <div class="input-wrapper">
                         <input type="date" name="from" class="form-control" value="@Context.Request.Query["from"]" />
                         <i class="bi bi-calendar-event input-icon"></i>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label class="form-label">إلى تاريخ</label>
                     <div class="input-wrapper">
                         <input type="date" name="to" class="form-control" value="@Context.Request.Query["to"]" />
                         <i class="bi bi-calendar-event input-icon"></i>
                     </div>
                 </div>
-                @if (User.IsInRole("Manager"))
-                {
-                    <div class="col-md-3">
-                        <label class="form-label">معرف الكاشير (اختياري)</label>
-                        <div class="input-wrapper">
-                            <input type="text" name="cashierId" class="form-control" placeholder="مثال: 123" value="@Context.Request.Query["cashierId"]" />
-                            <i class="bi bi-person-badge input-icon"></i>
-                        </div>
-                    </div>
-                }
-                <div class="col-md-@(User.IsInRole("Manager") ? "3" : "6")">
+                <div class="col-md-4">
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-filter flex-grow-1">
+                        <button type="submit" class="btn-filter flex-grow-1">
                             <i class="bi bi-funnel"></i> تصفية
                         </button>
-                        <a asp-action="History" class="btn btn-reset">
+                        <a asp-action="Timeline" class="btn-reset">
                             <i class="bi bi-arrow-clockwise"></i>
                         </a>
                     </div>
@@ -475,35 +561,53 @@
         </form>
     </div>
 
-    @if (!Model.Any())
+    <!-- Profit Summary -->
+    <div class="profit-summary @(Model.TotalProfit < 0 ? "profit-negative" : "")">
+        <div class="profit-summary-icon">
+            <i class="bi bi-currency-exchange"></i>
+        </div>
+        <div class="profit-summary-label">إجمالي صافي الربح</div>
+        <h4 class="profit-summary-value @(Model.TotalProfit >= 0 ? "profit-positive" : "profit-negative")">
+            @Model.TotalProfit <small>ج.م</small>
+            <span class="profit-trend @(Model.TotalProfit >= 0 ? "trend-up" : "trend-down")">
+                <i class="bi bi-@(Model.TotalProfit >= 0 ? "arrow-up" : "arrow-down")"></i>
+            </span>
+        </h4>
+    </div>
+
+    @if (!Model.Entries.Any())
     {
         <!-- Empty State -->
-        <div class="empty-state">
-            <div class="empty-state-icon">
-                <i class="bi bi-inbox"></i>
+        <div class="table-wrapper">
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <h5>لا توجد عمليات مطابقة</h5>
+                <p>جرّب تغيير معايير التصفية لعرض العمليات</p>
             </div>
-            <h5>لا توجد عمليات بيع مطابقة</h5>
-            <p>جرّب تغيير معايير التصفية أو تسجيل عملية بيع جديدة</p>
         </div>
     }
     else
     {
-        <!-- Sales Table -->
+        <!-- Timeline Table -->
         <div class="table-wrapper">
             <div class="table-header">
                 <h5 class="table-title">
                     <i class="bi bi-list-ul"></i>
                     تفاصيل العمليات
                 </h5>
-                <div class="table-total">
-                    الإجمالي: <strong>@Model.Sum(r => r.LineTotal) ج.م</strong>
-                </div>
+                <span class="table-count">@Model.Entries.Count عملية</span>
             </div>
 
             <div class="table-responsive-wrapper">
-                <table class="sales-table">
+                <table class="timeline-table">
                     <thead>
                         <tr>
+                            <th>
+                                <i class="bi bi-arrow-left-right"></i>
+                                النوع
+                            </th>
                             <th>
                                 <i class="bi bi-upc-scan"></i>
                                 كود الصنف
@@ -526,15 +630,15 @@
                             </th>
                             <th>
                                 <i class="bi bi-tag-fill"></i>
-                                سعر البيع
+                                السعر
                             </th>
                             <th>
                                 <i class="bi bi-cash-stack"></i>
-                                الإجمالي
+                                الربح
                             </th>
                             <th>
                                 <i class="bi bi-person"></i>
-                                البائع
+                                الشخص
                             </th>
                             <th>
                                 <i class="bi bi-clock"></i>
@@ -543,50 +647,58 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var r in Model)
+                        @foreach (var e in Model.Entries)
                         {
-                            var qtyClass = r.Quantity >= 3 ? "quantity-high" : "";
-                            var initials = string.IsNullOrEmpty(r.CashierName) ? "?" :
-                                r.CashierName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a + b).ToUpper();
-                            var saleDate = r.SaleDate.ToLocalTime();
+                            var isSale = e.Type == "بيع";
+                            var initials = string.IsNullOrEmpty(e.PersonName) ? "?" :
+                                e.PersonName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a + b).ToUpper();
+                            var entryDate = e.Date.ToLocalTime();
                             <tr>
                                 <td>
-                                    <span class="piece-code">@r.PieceCode</span>
+                                    <span class="type-badge @(isSale ? "type-sale" : "type-return")">
+                                        <i class="bi bi-@(isSale ? "cart-check" : "arrow-return-left")"></i>
+                                        @e.Type
+                                    </span>
                                 </td>
                                 <td>
-                                    <span class="product-name">@r.ProductName</span>
+                                    <span class="piece-code">@e.PieceCode</span>
+                                </td>
+                                <td>
+                                    <span class="product-name">@e.ProductName</span>
                                 </td>
                                 <td>
                                     <span class="variant-info variant-color">
                                         <i class="bi bi-palette"></i>
-                                        @r.Color
+                                        @e.Color
                                     </span>
                                 </td>
                                 <td>
                                     <span class="variant-info variant-size">
                                         <i class="bi bi-rulers"></i>
-                                        @r.Size
+                                        @e.Size
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="quantity-badge @qtyClass">@r.Quantity</span>
+                                    <span class="quantity-badge">@e.Quantity</span>
                                 </td>
                                 <td>
-                                    <span class="price-cell">@r.UnitSellPrice <small>ج.م</small></span>
+                                    <span class="price-cell">@e.UnitPrice <small>ج.م</small></span>
                                 </td>
                                 <td>
-                                    <span class="total-cell">@r.LineTotal ج.م</span>
+                                    <span class="profit-cell @(e.ProfitAmount >= 0 ? "profit-positive-cell" : "profit-negative-cell")">
+                                        @e.ProfitAmount <small>ج.م</small>
+                                    </span>
                                 </td>
                                 <td>
-                                    <div class="cashier-name">
-                                        <span class="cashier-avatar">@initials</span>
-                                        @r.CashierName
+                                    <div class="person-name">
+                                        <span class="person-avatar">@initials</span>
+                                        @e.PersonName
                                     </div>
                                 </td>
                                 <td>
                                     <div class="date-cell">
-                                        <span class="date-main">@saleDate.ToString("yyyy-MM-dd")</span>
-                                        <span class="date-time">@saleDate.ToString("HH:mm")</span>
+                                        <span class="date-main">@entryDate.ToString("yyyy-MM-dd")</span>
+                                        <span class="date-time">@entryDate.ToString("HH:mm")</span>
                                     </div>
                                 </td>
                             </tr>
