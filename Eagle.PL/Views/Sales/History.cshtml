@@ -1,6 +1,12 @@
 @model Eagle.PL.Models.TimelinePageViewModel
 @{
     ViewData["Title"] = "سجل العمليات";
+    
+    // Calculate totals dynamically from the entries list
+    var totalProcesses = Model.Entries.Count;
+    var totalSalesProfit = Model.Entries.Where(e => e.Type == "بيع").Sum(e => e.ProfitAmount);
+    var totalReturnProfit = Model.Entries.Where(e => e.Type == "إرجاع").Sum(e => e.ProfitAmount);
+    var totalReturnLoss = totalReturnProfit < 0 ? -totalReturnProfit : totalReturnProfit; // Safe absolute value
 }
 
 <style>
@@ -138,34 +144,47 @@
         color: #212529;
     }
 
-    /* Profit Summary Card */
-    .profit-summary {
+    /* ========================================
+       Stats Grid (4 Cards)
+       ======================================== */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
         background-color: #ffffff;
         border: none;
         border-radius: 16px;
         padding: 1.5rem;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-        margin-bottom: 2rem;
-        max-width: 340px;
         position: relative;
         overflow: hidden;
+        transition: transform 0.2s ease-in-out;
     }
 
-    .profit-summary::before {
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card::before {
         content: '';
         position: absolute;
         top: 0;
         right: 0;
         width: 4px;
         height: 100%;
-        background-color: #198754;
     }
 
-    .profit-summary.profit-negative::before {
-        background-color: #dc3545;
-    }
+    .stat-card.card-processes::before { background-color: #6c757d; }
+    .stat-card.card-sales::before { background-color: #0d6efd; }
+    .stat-card.card-returns::before { background-color: #dc3545; }
+    .stat-card.card-profit::before { background-color: #198754; }
 
-    .profit-summary-icon {
+    .stat-icon {
         width: 50px;
         height: 50px;
         border-radius: 12px;
@@ -178,16 +197,14 @@
         font-size: 1.5rem;
     }
 
-    .profit-summary-label {
+    .stat-label {
         color: #6c757d;
         font-size: 0.85rem;
         font-weight: 500;
         margin-bottom: 0.5rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
 
-    .profit-summary-value {
+    .stat-value {
         font-size: 1.75rem;
         font-weight: 700;
         margin: 0;
@@ -197,19 +214,14 @@
         gap: 0.5rem;
     }
 
-    .profit-summary-value small {
+    .stat-value small {
         color: #6c757d;
         font-weight: 400;
         font-size: 0.9rem;
     }
 
-    .profit-positive {
-        color: #0f5132;
-    }
-
-    .profit-negative {
-        color: #842029;
-    }
+    .profit-positive { color: #0f5132; }
+    .profit-negative { color: #842029; }
 
     .profit-trend {
         display: inline-flex;
@@ -507,10 +519,6 @@
         .person-avatar {
             display: none;
         }
-
-        .profit-summary {
-            max-width: 100%;
-        }
     }
 </style>
 
@@ -561,18 +569,48 @@
         </form>
     </div>
 
-    <!-- Profit Summary -->
-    <div class="profit-summary @(Model.TotalProfit < 0 ? "profit-negative" : "")">
-        <div class="profit-summary-icon">
-            <i class="bi bi-currency-exchange"></i>
+    <!-- Stats Grid (4 Cards) -->
+    <div class="stats-grid">
+        <!-- 1. Total Processes -->
+        <div class="stat-card card-processes">
+            <div class="stat-icon">
+                <i class="bi bi-receipt"></i>
+            </div>
+            <div class="stat-label">إجمالي العمليات</div>
+            <h4 class="stat-value">@totalProcesses <small>عملية</small></h4>
         </div>
-        <div class="profit-summary-label">إجمالي صافي الربح</div>
-        <h4 class="profit-summary-value @(Model.TotalProfit >= 0 ? "profit-positive" : "profit-negative")">
-            @Model.TotalProfit <small>ج.م</small>
-            <span class="profit-trend @(Model.TotalProfit >= 0 ? "trend-up" : "trend-down")">
-                <i class="bi bi-@(Model.TotalProfit >= 0 ? "arrow-up" : "arrow-down")"></i>
-            </span>
-        </h4>
+
+        <!-- 2. Total Sales Profit -->
+        <div class="stat-card card-sales">
+            <div class="stat-icon">
+                <i class="bi bi-graph-up"></i>
+            </div>
+            <div class="stat-label">إجمالي ربح المبيعات</div>
+            <h4 class="stat-value profit-positive">@totalSalesProfit <small>ج.م</small></h4>
+        </div>
+
+        <!-- 3. Total Return Loss -->
+        <div class="stat-card card-returns">
+            <div class="stat-icon">
+                <i class="bi bi-arrow-return-left"></i>
+            </div>
+            <div class="stat-label">إجمالي خسائر الإرجاع</div>
+            <h4 class="stat-value profit-negative">@totalReturnLoss <small>ج.م</small></h4>
+        </div>
+
+        <!-- 4. Total Net Profit -->
+        <div class="stat-card card-profit">
+            <div class="stat-icon">
+                <i class="bi bi-currency-exchange"></i>
+            </div>
+            <div class="stat-label">إجمالي صافي الربح</div>
+            <h4 class="stat-value @(Model.TotalProfit >= 0 ? "profit-positive" : "profit-negative")">
+                @Model.TotalProfit <small>ج.م</small>
+                <span class="profit-trend @(Model.TotalProfit >= 0 ? "trend-up" : "trend-down")">
+                    <i class="bi bi-@(Model.TotalProfit >= 0 ? "arrow-up" : "arrow-down")"></i>
+                </span>
+            </h4>
+        </div>
     </div>
 
     @if (!Model.Entries.Any())
