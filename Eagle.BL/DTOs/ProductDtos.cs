@@ -47,4 +47,12 @@ namespace Eagle.BL.DTOs
         List<VariantDto> Variants,
         List<SaleRecordDto> SaleHistory
     );
+
+    public record StoreOverviewDto
+    (
+        decimal InventoryValueAtCost, 
+        decimal ExpectedProfitIfAllSold, 
+        decimal RealizedRevenue, 
+        decimal RealizedProfit
+    );
 }

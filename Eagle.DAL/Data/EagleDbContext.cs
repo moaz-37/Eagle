@@ -12,6 +12,7 @@ namespace Eagle.DAL.Data
         public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
         public DbSet<Sale> Sales => Set<Sale>();
         public DbSet<SaleItem> SaleItems => Set<SaleItem>();
+        public DbSet<SaleReturn> SaleReturns => Set<SaleReturn>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -20,15 +21,23 @@ namespace Eagle.DAL.Data
             modelBuilder.Entity<Sale>()
                 .HasOne(s => s.User)
                 .WithMany(u => u.Sales)
-                .HasForeignKey(s => s.UserId);
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
 
-            modelBuilder.Entity<Product>()
-                .HasIndex(p => p.PieceCode)
-                .IsUnique();
+            modelBuilder.Entity<SaleReturn>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
 
-            modelBuilder.Entity<ProductVariant>()
-                .HasIndex(v => new { v.ProductId, v.Color, v.Size })
-                .IsUnique();
+            modelBuilder.Entity<SaleReturn>()
+                .HasOne(r => r.SaleItem)
+                .WithMany()
+                .HasForeignKey(r => r.SaleItemId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>().HasIndex(p => p.PieceCode).IsUnique();
+            modelBuilder.Entity<ProductVariant>().HasIndex(v => new { v.ProductId, v.Color, v.Size }).IsUnique();
 
             modelBuilder.Entity<Product>().Property(p => p.BuyPrice).HasColumnType("decimal(10,2)");
             modelBuilder.Entity<Product>().Property(p => p.SellPrice).HasColumnType("decimal(10,2)");

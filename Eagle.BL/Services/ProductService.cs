@@ -110,6 +110,15 @@ namespace Eagle.BL.Services
             await _db.SaveChangesAsync();
         }
 
+        public async Task<StoreOverviewDto> GetStoreOverviewAsync()
+        {
+            var products = await _db.Products.Include(p => p.Variants).ToListAsync();
+
+            var inventoryValueAtCost = products.Sum(p => p.Variants.Sum(v => v.StockQuantity) * p.BuyPrice);
+            var expectedProfit = products.Sum(p => p.Variants.Sum(v => v.StockQuantity) * (p.SellPrice - p.BuyPrice));
+
+            return new StoreOverviewDto(inventoryValueAtCost, expectedProfit, 0, 0);
+        }
 
     }
 }
