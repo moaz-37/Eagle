@@ -216,13 +216,54 @@
                     <p class="form-subtitle">ابحث عن الصنف باستخدام كوده</p>
                 </div>
 
+                @if (Model != null)
+                {
+                    <div class="card p-3 mb-3" style="max-width:500px;">
+                        <h5>@Model.Name (@Model.PieceCode)</h5>
+                        <p class="text-muted mb-1">الماركة: @Model.Brand</p>
+                        <p class="mb-1">سعر الشراء: @Model.BuyPrice</p>
+                        <p class="mb-3">سعر البيع المقترح: @Model.SellPrice</p>
+
+                        @if (!Model.Variants.Any(v => v.StockQuantity > 0))
+                        {
+                            <div class="alert alert-danger">لا توجد قطع متاحة من هذا الصنف حالياً في أي لون أو مقاس</div>
+                        }
+                        else
+                        {
+                            <form asp-action="Create" method="post">
+                                @Html.Hidden("pieceCode", Model.PieceCode)
+                                <div class="mb-2">
+                                    <label class="form-label">اللون / المقاس</label>
+                                    <select name="ProductVariantId" class="form-select" required>
+                                        @foreach (var v in Model.Variants.Where(v => v.StockQuantity > 0))
+                                        {
+                                            <option value="@v.VariantId">@v.Color - @v.Size (متاح: @v.StockQuantity)</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label">الكمية</label>
+                                    <input type="number" name="Quantity" class="form-control" min="1" value="1" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">سعر البيع</label>
+                                    <input type="number" step="0.01" name="UnitSellPrice" class="form-control"
+                                           value="@Model.SellPrice" required />
+                                </div>
+                                <button class="btn btn-success w-100">تأكيد البيع</button>
+                            </form>
+                        }
+                    </div>
+                }
+
                 <!-- Search Form -->
                 <form method="get">
                     <div asp-validation-summary="All" class="text-danger mb-3"></div>
-                    
+
                     <div class="d-flex gap-2">
                         <div class="search-wrapper flex-grow-1">
-                            <input type="text" name="pieceCode" class="form-control" placeholder="كود الصنف" value="@ViewBag.PieceCode" required />
+                            <input type="text" name="pieceCode" class="form-control" placeholder="كود الصنف"
+                                   value="@ViewBag.PieceCode" required />
                             <i class="bi bi-upc-scan input-icon"></i>
                         </div>
                         <button type="submit" class="btn btn-search">
@@ -270,7 +311,8 @@
                         <!-- Unit Sell Price -->
                         <label class="form-label">سعر البيع</label>
                         <div class="input-wrapper">
-                            <input type="number" step="0.01" name="UnitSellPrice" class="form-control" value="@Model.SellPrice" required />
+                            <input type="number" step="0.01" name="UnitSellPrice" class="form-control"
+                                   value="@Model.SellPrice" required />
                             <i class="bi bi-tag-fill input-icon"></i>
                         </div>
 

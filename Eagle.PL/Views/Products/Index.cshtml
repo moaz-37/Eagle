@@ -81,7 +81,9 @@
         border-bottom: 1px solid #e9ecef;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .table-title {
@@ -92,6 +94,92 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+    }
+
+    /* Search Form in Header */
+    .search-form {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        margin: 0;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+    }
+
+    .search-input-wrapper .form-control {
+        border-radius: 10px;
+        border: 1.5px solid #e9ecef;
+        padding: 8px 40px 8px 15px;
+        font-size: 0.9rem;
+        background-color: #ffffff;
+        transition: all 0.2s ease-in-out;
+        min-width: 260px;
+        height: 42px;
+    }
+
+    .search-input-wrapper .form-control:focus {
+        border-color: #212529;
+        box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.1);
+        background-color: #ffffff;
+    }
+
+    .search-input-wrapper .input-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        font-size: 1rem;
+        pointer-events: none;
+        transition: color 0.2s ease-in-out;
+    }
+
+    .search-input-wrapper:focus-within .input-icon {
+        color: #212529;
+    }
+
+    .btn-search {
+        background-color: #ffffff;
+        border: 1.5px solid #212529;
+        border-radius: 10px;
+        padding: 8px 18px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #212529;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        height: 42px;
+        white-space: nowrap;
+    }
+
+    .btn-search:hover {
+        background-color: #212529;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-clear {
+        background-color: transparent;
+        border: 1.5px solid #e9ecef;
+        border-radius: 10px;
+        padding: 8px 12px;
+        color: #6c757d;
+        transition: all 0.2s ease-in-out;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+    }
+
+    .btn-clear:hover {
+        border-color: #dc3545;
+        color: #dc3545;
+        background-color: #fff5f5;
     }
 
     /* Modern Table */
@@ -210,15 +298,19 @@
         color: #842029;
     }
 
-    /* Action Button */
-    .btn-variant {
-        background-color: #ffffff;
-        border: 1.5px solid #212529;
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-variant,
+    .btn-details {
         border-radius: 8px;
         padding: 0.4rem 0.9rem;
         font-weight: 600;
         font-size: 0.85rem;
-        color: #212529;
         transition: all 0.2s ease-in-out;
         display: inline-flex;
         align-items: center;
@@ -227,11 +319,31 @@
         white-space: nowrap;
     }
 
+    .btn-variant {
+        background-color: #ffffff;
+        border: 1.5px solid #212529;
+        color: #212529;
+    }
+
     .btn-variant:hover {
         background-color: #212529;
         color: #ffffff;
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-details {
+        background-color: #f8f9fa;
+        border: 1.5px solid #e9ecef;
+        color: #495057;
+    }
+
+    .btn-details:hover {
+        background-color: #212529;
+        border-color: #212529;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     /* Empty State */
@@ -278,13 +390,39 @@
             flex-direction: column;
             align-items: stretch;
         }
+
         .btn-add {
             justify-content: center;
         }
+
+        .table-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-form {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .search-input-wrapper .form-control {
+            min-width: 0;
+            width: 100%;
+        }
+
         .products-table thead th,
         .products-table tbody td {
             padding: 0.75rem 1rem;
             font-size: 0.85rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
         }
     }
 </style>
@@ -331,6 +469,25 @@
                     <i class="bi bi-list-ul"></i>
                     قائمة الأصناف
                 </h5>
+
+                <!-- Search Form -->
+                <form method="get" class="search-form">
+                    <div class="search-input-wrapper">
+                        <input type="text" name="search" class="form-control" placeholder="بحث بكود الصنف"
+                               value="@ViewBag.Search" />
+                        <i class="bi bi-search input-icon"></i>
+                    </div>
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                        بحث
+                    </button>
+                    @if (!string.IsNullOrEmpty(ViewBag.Search?.ToString()))
+                    {
+                        <a asp-action="Index" class="btn-clear" title="مسح البحث">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    }
+                </form>
             </div>
 
             <div class="table-responsive-wrapper">
@@ -403,11 +560,18 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a asp-controller="Products" asp-action="AddVariant"
-                                       asp-route-productId="@p.Id" class="btn-variant">
-                                        <i class="bi bi-plus-circle"></i>
-                                        إضافة لون/مقاس
-                                    </a>
+                                    <div class="action-buttons">
+                                        <a asp-controller="Products" asp-action="Details" asp-route-id="@p.Id"
+                                           class="btn-details">
+                                            <i class="bi bi-eye"></i>
+                                            التفاصيل
+                                        </a>
+                                        <a asp-controller="Products" asp-action="AddVariant" asp-route-productId="@p.Id"
+                                           class="btn-variant">
+                                            <i class="bi bi-plus-circle"></i>
+                                            لون/مقاس
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         }
