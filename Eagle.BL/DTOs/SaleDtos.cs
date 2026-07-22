@@ -39,4 +39,19 @@ namespace Eagle.BL.DTOs
         decimal Revenue, 
         decimal Profit
     );
+
+
+    public record SaleRecordDto
+    (
+        int SaleId, 
+        DateTime SaleDate,
+        string PieceCode, 
+        string ProductName, 
+        string Color, 
+        string Size,
+        int Quantity, 
+        decimal UnitSellPrice, 
+        decimal LineTotal,
+        string CashierName
+    );
 }

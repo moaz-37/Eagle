@@ -32,6 +32,19 @@ namespace Eagle.PL.Controllers
             return View((ProductLookupResult?)null);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> History(DateTime? from, DateTime? to, Guid? cashierId)
+        {
+            Guid? effectiveCashierId = cashierId;
+            if (!User.IsInRole("Manager"))
+            {
+                effectiveCashierId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            }
+
+            var records = await _saleService.GetSaleRecordsAsync(new SaleStatsFilter(from, to, effectiveCashierId));
+            return View(records);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateSaleDto dto, string pieceCode)

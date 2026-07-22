@@ -1,0 +1,600 @@
+@model List<Eagle.BL.DTOs.SaleRecordDto>
+@{
+    ViewData["Title"] = "سجل عمليات البيع";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-subtitle {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .badge-count {
+        background-color: #f8f9fa;
+        color: #212529;
+        font-weight: 600;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        border: 1px solid #e9ecef;
+    }
+
+    /* Filter Form */
+    .filter-form {
+        background-color: #ffffff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .filter-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-title i {
+        color: #212529;
+        font-size: 1.1rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+        margin-bottom: 0;
+    }
+
+    .input-wrapper .form-control {
+        border-radius: 10px;
+        border: 1.5px solid #e9ecef;
+        padding: 10px 42px 10px 15px;
+        font-size: 0.95rem;
+        background-color: #fdfdfd;
+        transition: all 0.2s ease-in-out;
+        height: auto;
+        width: 100%;
+    }
+
+    .input-wrapper .form-control:focus {
+        border-color: #212529;
+        box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.1);
+        background-color: #ffffff;
+    }
+
+    .input-wrapper .input-icon {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        font-size: 1.1rem;
+        pointer-events: none;
+        transition: color 0.2s ease-in-out;
+        z-index: 5;
+    }
+
+    .input-wrapper:focus-within .input-icon {
+        color: #212529;
+    }
+
+    .btn-filter {
+        background-color: #212529;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 24px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #ffffff;
+        transition: all 0.2s ease-in-out;
+        white-space: nowrap;
+        height: 44px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-filter:hover {
+        background-color: #000000;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: #fff;
+    }
+
+    .btn-reset {
+        background-color: #ffffff;
+        border: 1.5px solid #e9ecef;
+        border-radius: 10px;
+        padding: 10px 18px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #495057;
+        transition: all 0.2s ease-in-out;
+        height: 44px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-reset:hover {
+        background-color: #f8f9fa;
+        border-color: #212529;
+        color: #212529;
+    }
+
+    /* Table Wrapper */
+    .table-wrapper {
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .table-header {
+        background-color: #f8f9fa;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .table-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .table-total {
+        color: #6c757d;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .table-total strong {
+        color: #212529;
+        font-weight: 700;
+    }
+
+    /* Modern Table */
+    .sales-table {
+        margin: 0;
+        width: 100%;
+    }
+
+    .sales-table thead th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem 1.25rem;
+        border-bottom: 2px solid #e9ecef;
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    .sales-table thead th i {
+        margin-left: 0.35rem;
+        color: #adb5bd;
+        font-size: 0.9rem;
+    }
+
+    .sales-table tbody td {
+        padding: 1.15rem 1.25rem;
+        color: #212529;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #f1f3f5;
+        vertical-align: middle;
+    }
+
+    .sales-table tbody tr {
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .sales-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .sales-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Cell Styles */
+    .piece-code {
+        font-family: 'Courier New', monospace;
+        font-weight: 600;
+        color: #212529;
+        background-color: #f8f9fa;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        display: inline-block;
+        font-size: 0.9rem;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .variant-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .variant-color {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+    }
+
+    .variant-size {
+        background-color: #f3e8ff;
+        color: #7c3aed;
+    }
+
+    .quantity-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        padding: 0.3rem 0.6rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        background-color: #f8f9fa;
+        color: #212529;
+        border: 1px solid #e9ecef;
+    }
+
+    .quantity-high {
+        background-color: #d1e7dd;
+        color: #0f5132;
+        border-color: #badbcc;
+    }
+
+    .price-cell {
+        font-weight: 600;
+        color: #212529;
+        white-space: nowrap;
+    }
+
+    .price-cell small {
+        color: #6c757d;
+        font-weight: 400;
+        font-size: 0.8rem;
+    }
+
+    .total-cell {
+        font-weight: 700;
+        color: #0f5132;
+        white-space: nowrap;
+        background-color: #d1e7dd;
+        padding: 0.35rem 0.75rem;
+        border-radius: 8px;
+        display: inline-block;
+    }
+
+    .cashier-name {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+    }
+
+    .cashier-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #212529;
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .date-cell {
+        display: inline-flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        font-size: 0.85rem;
+    }
+
+    .date-main {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .date-time {
+        color: #6c757d;
+        font-size: 0.8rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1.5rem;
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .empty-state-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: #adb5bd;
+        font-size: 2.5rem;
+    }
+
+    .empty-state h5 {
+        color: #212529;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+    /* Responsive Table */
+    .table-responsive-wrapper {
+        overflow-x: auto;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .sales-table thead th,
+        .sales-table tbody td {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+        }
+        .cashier-avatar {
+            display: none;
+        }
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title-group">
+            <h2 class="form-title">
+                <i class="bi bi-receipt"></i>
+                سجل عمليات البيع
+                <span class="badge-count">@Model.Count عملية</span>
+            </h2>
+            <p class="form-subtitle">عرض جميع عمليات البيع المسجلة في النظام</p>
+        </div>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="filter-form">
+        <h5 class="filter-title">
+            <i class="bi bi-funnel-fill"></i>
+            تصفية النتائج
+        </h5>
+        <form method="get">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">من تاريخ</label>
+                    <div class="input-wrapper">
+                        <input type="date" name="from" class="form-control" value="@Context.Request.Query["from"]" />
+                        <i class="bi bi-calendar-event input-icon"></i>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">إلى تاريخ</label>
+                    <div class="input-wrapper">
+                        <input type="date" name="to" class="form-control" value="@Context.Request.Query["to"]" />
+                        <i class="bi bi-calendar-event input-icon"></i>
+                    </div>
+                </div>
+                @if (User.IsInRole("Manager"))
+                {
+                    <div class="col-md-3">
+                        <label class="form-label">معرف الكاشير (اختياري)</label>
+                        <div class="input-wrapper">
+                            <input type="text" name="cashierId" class="form-control" placeholder="مثال: 123" value="@Context.Request.Query["cashierId"]" />
+                            <i class="bi bi-person-badge input-icon"></i>
+                        </div>
+                    </div>
+                }
+                <div class="col-md-@(User.IsInRole("Manager") ? "3" : "6")">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-filter flex-grow-1">
+                            <i class="bi bi-funnel"></i> تصفية
+                        </button>
+                        <a asp-action="History" class="btn btn-reset">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="bi bi-inbox"></i>
+            </div>
+            <h5>لا توجد عمليات بيع مطابقة</h5>
+            <p>جرّب تغيير معايير التصفية أو تسجيل عملية بيع جديدة</p>
+        </div>
+    }
+    else
+    {
+        <!-- Sales Table -->
+        <div class="table-wrapper">
+            <div class="table-header">
+                <h5 class="table-title">
+                    <i class="bi bi-list-ul"></i>
+                    تفاصيل العمليات
+                </h5>
+                <div class="table-total">
+                    الإجمالي: <strong>@Model.Sum(r => r.LineTotal) ج.م</strong>
+                </div>
+            </div>
+
+            <div class="table-responsive-wrapper">
+                <table class="sales-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="bi bi-upc-scan"></i>
+                                كود الصنف
+                            </th>
+                            <th>
+                                <i class="bi bi-box-seam"></i>
+                                الاسم
+                            </th>
+                            <th>
+                                <i class="bi bi-palette"></i>
+                                اللون
+                            </th>
+                            <th>
+                                <i class="bi bi-rulers"></i>
+                                المقاس
+                            </th>
+                            <th>
+                                <i class="bi bi-boxes"></i>
+                                الكمية
+                            </th>
+                            <th>
+                                <i class="bi bi-tag-fill"></i>
+                                سعر البيع
+                            </th>
+                            <th>
+                                <i class="bi bi-cash-stack"></i>
+                                الإجمالي
+                            </th>
+                            <th>
+                                <i class="bi bi-person"></i>
+                                البائع
+                            </th>
+                            <th>
+                                <i class="bi bi-clock"></i>
+                                التاريخ والوقت
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            var qtyClass = r.Quantity >= 3 ? "quantity-high" : "";
+                            var initials = string.IsNullOrEmpty(r.CashierName) ? "?" :
+                                r.CashierName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a + b).ToUpper();
+                            var saleDate = r.SaleDate.ToLocalTime();
+                            <tr>
+                                <td>
+                                    <span class="piece-code">@r.PieceCode</span>
+                                </td>
+                                <td>
+                                    <span class="product-name">@r.ProductName</span>
+                                </td>
+                                <td>
+                                    <span class="variant-info variant-color">
+                                        <i class="bi bi-palette"></i>
+                                        @r.Color
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="variant-info variant-size">
+                                        <i class="bi bi-rulers"></i>
+                                        @r.Size
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="quantity-badge @qtyClass">@r.Quantity</span>
+                                </td>
+                                <td>
+                                    <span class="price-cell">@r.UnitSellPrice <small>ج.م</small></span>
+                                </td>
+                                <td>
+                                    <span class="total-cell">@r.LineTotal ج.م</span>
+                                </td>
+                                <td>
+                                    <div class="cashier-name">
+                                        <span class="cashier-avatar">@initials</span>
+                                        @r.CashierName
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="date-cell">
+                                        <span class="date-main">@saleDate.ToString("yyyy-MM-dd")</span>
+                                        <span class="date-time">@saleDate.ToString("HH:mm")</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>

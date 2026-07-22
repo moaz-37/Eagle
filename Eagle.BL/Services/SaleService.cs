@@ -78,5 +78,35 @@ namespace Eagle.BL.Services
                 sales.Sum(s => s.SaleItems.Sum(i => (i.UnitSellPrice - i.UnitBuyPrice) * i.Quantity)),
                 byCashier);
         }
+
+
+        public async Task<List<SaleRecordDto>> GetSaleRecordsAsync(SaleStatsFilter filter)
+        {
+            var query = _db.SaleItems
+                .Include(si => si.Sale).ThenInclude(s => s.User)
+                .Include(si => si.ProductVariant).ThenInclude(v => v.Product)
+                .AsQueryable();
+
+            if (filter.From.HasValue) query = query.Where(si => si.Sale.SaleDate >= filter.From.Value);
+            if (filter.To.HasValue) query = query.Where(si => si.Sale.SaleDate <= filter.To.Value);
+            if (filter.CashierId.HasValue) query = query.Where(si => si.Sale.UserId == filter.CashierId.Value);
+
+            var items = await query
+                .OrderByDescending(si => si.Sale.SaleDate)
+                .ToListAsync();
+
+            return items.Select(si => new SaleRecordDto(
+                si.Sale.Id,
+                si.Sale.SaleDate,
+                si.ProductVariant.Product.PieceCode,
+                si.ProductVariant.Product.Name,
+                si.ProductVariant.Color,
+                si.ProductVariant.Size,
+                si.Quantity,
+                si.UnitSellPrice,
+                si.UnitSellPrice * si.Quantity,
+                si.Sale.User.FullName
+            )).ToList();
+        }
     }
 }
