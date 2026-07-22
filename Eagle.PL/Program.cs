@@ -47,7 +47,7 @@ using (var scope = app.Services.CreateScope())
     const string managerEmail = "admin@eagle.local";
     if (await userManager.FindByEmailAsync(managerEmail) is null)
     {
-        var manager = new User { UserName = managerEmail, Email = managerEmail, FullName = "Eagle Admin" };
+        var manager = new User { UserName = managerEmail, Email = managerEmail, FullName = "Eagle " };
         var result = await userManager.CreateAsync(manager, "Admin@123");
         if (result.Succeeded)
             await userManager.AddToRoleAsync(manager, "Manager");
