@@ -34,12 +34,11 @@
                     <div class="brand-logo">
                         <img src="~/images/Eagle.png" alt="Eagle" />
                     </div>
-                    <!-- <span class="brand-name">Eagle</span> -->
                 </a>
 
                 <!-- Mobile Toggle -->
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#mainNavbar">
+                        data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -187,7 +186,7 @@
     }
 
     .site-content {
-        flex: 1 0 auto; /* Grows to fill available space, prevents shrinking */
+        flex: 1 0 auto;
         width: 100%;
     }
 
@@ -206,7 +205,6 @@
         padding: 0.85rem 0;
     }
 
-    /* Brand */
     .brand-logo {
         width: 42px;
         height: 42px;
@@ -230,14 +228,7 @@
         background-color: rgba(255, 255, 255, 0.15);
     }
 
-    .brand-name {
-        color: #ffffff;
-        font-weight: 700;
-        font-size: 1.25rem;
-        letter-spacing: 0.5px;
-    }
-
-    /* Nav Links */
+    /* Nav Links - Desktop */
     .navbar-nav .nav-link {
         color: rgba(255, 255, 255, 0.75);
         font-weight: 500;
@@ -387,11 +378,11 @@
        Modern Footer
        ======================================== */
     .site-footer {
-        flex-shrink: 0; /* Prevents footer from shrinking */
+        flex-shrink: 0;
         background-color: #ffffff;
         border-top: 1px solid #e9ecef;
         padding: 1.5rem 0;
-        margin-top: auto; /* Pushes to bottom as a fallback */
+        margin-top: auto;
     }
 
     .footer-content {
@@ -423,30 +414,77 @@
     }
 
     /* ========================================
-       Responsive
+       Responsive - Mobile Navbar (Below 992px)
        ======================================== */
-    @@media (max-width: 991px) {
-        .navbar-nav {
-            padding: 1rem 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+    @@media (max-width: 991.98px) {
+        /* Collapsed navbar container */
+        .navbar-collapse {
             margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Nav items stack vertically */
+        .navbar-nav {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.25rem;
+        }
+
+        .navbar-nav .nav-item {
+            width: 100%;
         }
 
         .navbar-nav .nav-link {
             padding: 0.75rem 1rem !important;
+            margin: 0;
+            width: 100%;
+            justify-content: flex-start;
         }
 
+        /* User section stacks vertically */
         .navbar-user {
-            padding: 1rem 0;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 0.5rem;
-            justify-content: space-between;
+        }
+
+        .user-info {
+            justify-content: center;
             width: 100%;
         }
 
+        .btn-logout {
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Footer stacks */
         .footer-content {
             flex-direction: column;
             text-align: center;
+        }
+    }
+
+    /* ========================================
+       Responsive - Small Mobile (Below 576px)
+       ======================================== */
+    @@media (max-width: 575.98px) {
+        .navbar-nav .nav-link {
+            font-size: 0.9rem;
+            padding: 0.65rem 0.75rem !important;
+        }
+
+        .user-info {
+            font-size: 0.85rem;
+        }
+
+        .btn-logout {
+            font-size: 0.85rem;
+            padding: 0.5rem 0.75rem;
         }
     }
 </style>
