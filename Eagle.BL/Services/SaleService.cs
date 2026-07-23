@@ -233,5 +233,22 @@ namespace Eagle.BL.Services
                 byCashier
             );
         }
+        public async Task<SaleRecordDto?> GetSaleReceiptAsync(int saleId)
+        {
+            var si = await _db.SaleItems
+                .Include(x => x.Sale)
+                .Include(x => x.ProductVariant).ThenInclude(v => v.Product)
+                .FirstOrDefaultAsync(x => x.Sale.Id == saleId);
+
+            if (si is null) return null;
+
+            return new SaleRecordDto(
+                si.Sale.Id, si.Sale.SaleDate,
+                si.ProductVariant.Product.PieceCode, si.ProductVariant.Product.Name,
+                si.ProductVariant.Color, si.ProductVariant.Size,
+                si.Quantity, si.UnitSellPrice, si.UnitSellPrice * si.Quantity,
+                si.Sale.CashierNameSnapshot
+            );
+        }
     }
 }

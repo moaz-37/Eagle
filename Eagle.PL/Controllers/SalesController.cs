@@ -49,9 +49,17 @@ namespace Eagle.PL.Controllers
             }
 
             TempData["Success"] = "تم تسجيل عملية البيع بنجاح";
+            TempData["LastSaleId"] = result.SaleId;
             return RedirectToAction("Create");
         }
+        [HttpGet]
+        public async Task<IActionResult> PrintReceipt(int id)
+        {
+            var receipt = await _saleService.GetSaleReceiptAsync(id);
+            if (receipt is null) return NotFound();
 
+            return View(receipt);
+        }
         [HttpGet]
         public async Task<IActionResult> History(DateTime? from, DateTime? to, Guid? cashierId)
         {
