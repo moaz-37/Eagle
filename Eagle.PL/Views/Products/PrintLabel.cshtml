@@ -62,10 +62,13 @@
                     text-overflow: ellipsis;
                 }
 
-                .label .brand {
+                .label .brand-badge {
                     font-size: 7pt;
-                    color: #333;
+                    color: #ffffff;
                     margin-top: 0.5mm;
+                    background: #000000;
+                    padding: 2px 4px;
+                    border-radius: 3px;
                 }
 
                 .label .price {
@@ -99,7 +102,7 @@
         <div class="name">@Model.Name</div>
         @if (!string.IsNullOrEmpty(Model.Brand))
         {
-            <div class="brand">@Model.Brand</div>
+            <div class="brand-badge">@Model.Brand</div>
         }
         <div class="price">@Model.SellPrice ج.م</div>
     </div>
