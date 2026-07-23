@@ -86,5 +86,13 @@ namespace Eagle.PL.Controllers
 
             return View(detail);
         }
+        [HttpGet]
+        public async Task<IActionResult> PrintLabel(int id)
+        {
+            var product = await _productService.GetByIdAsync(id);
+            if (product is null) return NotFound();
+
+            return View(product);
+        }
     }
 }

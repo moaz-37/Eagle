@@ -346,8 +346,32 @@
         color: #ffffff;
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+    .btn-icon {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        padding: 0;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        border: 1.5px solid #e9ecef;
+        color: #495057;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        transition: all 0.2s ease-in-out;
+        text-decoration: none;
     }
 
+        .btn-icon:hover {
+            background-color: #212529;
+            border-color: #212529;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
     /* Empty State */
     .empty-state {
         text-align: center;
@@ -567,6 +591,10 @@
                                            class="btn-details">
                                             <i class="bi bi-eye"></i>
                                             التفاصيل
+                                        </a>
+                                        <a asp-controller="Products" asp-action="PrintLabel" asp-route-id="@p.Id"
+                                           class="btn-icon" target="_blank" title="طباعة ملصق">
+                                            <i class="bi bi-printer"></i>
                                         </a>
                                         <a asp-controller="Products" asp-action="AddVariant" asp-route-productId="@p.Id"
                                            class="btn-variant">

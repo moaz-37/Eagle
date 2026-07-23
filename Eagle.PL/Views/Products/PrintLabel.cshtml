@@ -1,0 +1,113 @@
+﻿@model Product
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>طباعة ملصق</title>
+    <style>
+            @@page {
+                size: 40mm 30mm;
+                margin: 0;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 40mm;
+                height: 30mm;
+            }
+
+            .label {
+                width: 40mm;
+                height: 30mm;
+                padding: 1.5mm;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                font-family: Arial, sans-serif;
+                overflow: hidden;
+            }
+
+                .label .store {
+                    font-weight: 700;
+                    font-size: 8pt;
+                    letter-spacing: 1px;
+                    text-transform: uppercase;
+                    margin-bottom: 0.5mm;
+                }
+
+                .label .code {
+                    font-family: 'Courier New', monospace;
+                    font-weight: 700;
+                    font-size: 9pt;
+                    letter-spacing: 0.5px;
+                }
+
+                .label .name {
+                    font-weight: 700;
+                    font-size: 8pt;
+                    margin-top: 0.8mm;
+                    max-width: 38mm;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .label .brand {
+                    font-size: 7pt;
+                    color: #333;
+                    margin-top: 0.5mm;
+                }
+
+                .label .price {
+                    font-weight: 700;
+                    font-size: 11pt;
+                    margin-top: 1mm;
+                }
+
+            @@media screen {
+                body {
+                    background: #ccc;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    width: auto;
+                    height: auto;
+                }
+
+                .label {
+                    background: #fff;
+                    box-shadow: 0 0 6px rgba(0,0,0,0.3);
+                }
+            }
+    </style>
+</head>
+<body>
+    <div class="label">
+        <div class="store">Eagle</div>
+        <div class="code">@Model.PieceCode</div>
+        <div class="name">@Model.Name</div>
+        @if (!string.IsNullOrEmpty(Model.Brand))
+        {
+            <div class="brand">@Model.Brand</div>
+        }
+        <div class="price">@Model.SellPrice ج.م</div>
+    </div>
+
+    <script>
+            window.onload = function () {
+                window.print();
+            };
+    </script>
+</body>
+</html>
