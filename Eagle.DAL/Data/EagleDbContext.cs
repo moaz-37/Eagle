@@ -14,6 +14,8 @@ namespace Eagle.DAL.Data
         public DbSet<SaleItem> SaleItems => Set<SaleItem>();
         public DbSet<SaleReturn> SaleReturns => Set<SaleReturn>();
 
+        public DbSet<DailyOverrideCode> DailyOverrideCodes => Set<DailyOverrideCode>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -44,6 +46,8 @@ namespace Eagle.DAL.Data
             modelBuilder.Entity<Sale>().Property(s => s.TotalAmount).HasColumnType("decimal(10,2)");
             modelBuilder.Entity<SaleItem>().Property(si => si.UnitSellPrice).HasColumnType("decimal(10,2)");
             modelBuilder.Entity<SaleItem>().Property(si => si.UnitBuyPrice).HasColumnType("decimal(10,2)");
+
+            modelBuilder.Entity<DailyOverrideCode>().HasIndex(c => c.Date).IsUnique();
         }
     }
 }
