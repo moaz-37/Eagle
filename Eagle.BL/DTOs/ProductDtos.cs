@@ -43,9 +43,12 @@ namespace Eagle.BL.DTOs
         string PieceCode, 
         string Name, 
         string? Brand,
-        decimal BuyPrice, decimal SellPrice, DateTime CreatedAt,
+        decimal BuyPrice, 
+        decimal SellPrice, 
+        DateTime CreatedAt,
         List<VariantDto> Variants,
-        List<SaleRecordDto> SaleHistory
+        List<SaleRecordDto> SaleHistory,
+        List<SaleReturnRecordDto> ReturnHistory
     );
 
     public record StoreOverviewDto
@@ -55,4 +58,16 @@ namespace Eagle.BL.DTOs
         decimal RealizedRevenue, 
         decimal RealizedProfit
     );
+
+    public record SaleReturnRecordDto
+    (
+        int ReturnId, 
+        DateTime ReturnDate,
+        string Color, 
+        string Size, 
+        int Quantity, 
+        decimal UnitSellPrice,
+        string ProcessedByName
+    );
+    
 }

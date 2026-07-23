@@ -16,10 +16,10 @@ namespace Eagle.BL.Services
                 .Include(v => v.Product)
                 .FirstOrDefaultAsync(v => v.Id == dto.ProductVariantId);
 
-            if (variant is null) 
+            if (variant is null)
                 return new SaleResult(false, "Variant not found.");
 
-            if (dto.Quantity <= 0) 
+            if (dto.Quantity <= 0)
                 return new SaleResult(false, "Quantity must be greater than zero.");
 
             if (variant.StockQuantity < dto.Quantity)
@@ -40,12 +40,12 @@ namespace Eagle.BL.Services
 
             sale.SaleItems.Add(
                 new SaleItem
-            {
-                ProductVariantId = variant.Id,
-                Quantity = dto.Quantity,
-                UnitSellPrice = dto.UnitSellPrice,
-                UnitBuyPrice = variant.Product.BuyPrice
-            });
+                {
+                    ProductVariantId = variant.Id,
+                    Quantity = dto.Quantity,
+                    UnitSellPrice = dto.UnitSellPrice,
+                    UnitBuyPrice = variant.Product.BuyPrice
+                });
 
             variant.StockQuantity -= dto.Quantity;
 
@@ -135,10 +135,10 @@ namespace Eagle.BL.Services
                 .Include(si => si.ProductVariant)
                 .FirstOrDefaultAsync(si => si.Id == dto.SaleItemId);
 
-            if (saleItem is null) 
+            if (saleItem is null)
                 return new ReturnResult(false, "عملية البيع غير موجودة.");
 
-            if (dto.Quantity <= 0) 
+            if (dto.Quantity <= 0)
                 return new ReturnResult(false, "الكمية غير صحيحة.");
 
             var alreadyReturned = await _db.SaleReturns
@@ -224,7 +224,7 @@ namespace Eagle.BL.Services
                 ))
                 .ToList();
 
-            return new 
+            return new
             (
                 entries.Count(e => e.Type == "بيع"),
                 entries.Sum(e => e.Type == "بيع" ? e.Quantity : -e.Quantity),
@@ -232,6 +232,23 @@ namespace Eagle.BL.Services
                 entries.Sum(e => e.ProfitAmount),
                 byCashier
             );
+        }
+
+
+        public async Task<List<SaleReturnRecordDto>> GetReturnHistoryForProductAsync(int productId)
+        {
+            var returns = await _db.SaleReturns
+                .Include(r => r.SaleItem).ThenInclude(si => si.ProductVariant)
+                .Where(r => r.SaleItem.ProductVariant.ProductId == productId)
+                .OrderByDescending(r => r.ReturnDate)
+                .ToListAsync();
+
+            return returns.Select(r => new SaleReturnRecordDto(
+                r.Id, r.ReturnDate,
+                r.SaleItem.ProductVariant.Color, r.SaleItem.ProductVariant.Size,
+                r.Quantity, r.SaleItem.UnitSellPrice,
+                r.ProcessedByNameSnapshot
+            )).ToList();
         }
         public async Task<SaleRecordDto?> GetSaleReceiptAsync(int saleId)
         {

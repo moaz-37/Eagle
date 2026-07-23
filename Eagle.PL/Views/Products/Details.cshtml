@@ -68,6 +68,31 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
+
+    /* Add Button */
+    .btn-add {
+        background-color: #212529;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #ffffff;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-add:hover {
+        background-color: #000000;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: #fff;
+    }
+
+    
     /* KPI Cards */
     .kpi-card {
         background-color: #ffffff;
@@ -343,6 +368,9 @@
         .btn-back {
             justify-content: center;
         }
+                .btn-add {
+            justify-content: center;
+        }
 
         .modern-table thead th,
         .modern-table tbody td {
@@ -368,10 +396,16 @@
             </h2>
             <p class="form-subtitle">عرض تفاصيل الصنف والمخزون وسجل المبيعات</p>
         </div>
-        <a asp-controller="Products" asp-action="Index" class="btn-back">
-            <i class="bi bi-arrow-right"></i>
-            العودة إلى المخزون
-        </a>
+        <div class="d-flex gap-2 flex-wrap">
+            <a asp-controller="Products" asp-action="AddVariant" asp-route-productId="@Model.ProductId" class="btn-add">
+                <i class="bi bi-plus-circle"></i>
+                إضافة لون / مقاس
+            </a>
+            <a asp-controller="Products" asp-action="Index" class="btn-back">
+                <i class="bi bi-arrow-right"></i>
+                العودة إلى المخزون
+            </a>
+        </div>
     </div>
 
     <!-- KPI Cards -->
@@ -539,7 +573,8 @@
                         @foreach (var s in Model.SaleHistory)
                         {
                             var initials = string.IsNullOrEmpty(s.CashierName) ? "?" :
-                                s.CashierName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a + b).ToUpper();
+                                s.CashierName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a +
+                    b).ToUpper();
                             var saleDate = s.SaleDate.ToLocalTime();
                             <tr>
                                 <td>
@@ -570,6 +605,86 @@
                                     <div class="date-cell">
                                         <span class="date-main">@saleDate.ToString("yyyy-MM-dd")</span>
                                         <span class="date-time">@saleDate.ToString("HH:mm")</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+
+    <!-- Return History Section -->
+    <div class="section-wrapper">
+        <div class="section-header">
+            <h5 class="section-title">
+                <i class="bi bi-arrow-counterclockwise"></i>
+                سجل عمليات الإرجاع لهذا الصنف
+            </h5>
+            <span class="section-badge">@Model.ReturnHistory.Count عملية</span>
+        </div>
+
+        @if (!Model.ReturnHistory.Any())
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <p>لا توجد عمليات إرجاع لهذا الصنف</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive-wrapper">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-palette"></i> اللون</th>
+                            <th><i class="bi bi-rulers"></i> المقاس</th>
+                            <th><i class="bi bi-boxes"></i> الكمية</th>
+                            <th><i class="bi bi-tag-fill"></i> سعر البيع الأصلي</th>
+                            <th><i class="bi bi-person"></i> بواسطة</th>
+                            <th><i class="bi bi-clock"></i> التاريخ والوقت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model.ReturnHistory)
+                        {
+                            var initials = string.IsNullOrEmpty(r.ProcessedByName) ? "?" :
+                                r.ProcessedByName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a +
+                        b).ToUpper();
+                            var returnDate = r.ReturnDate.ToLocalTime();
+                            <tr>
+                                <td>
+                                    <span class="variant-info variant-color">
+                                        <i class="bi bi-palette"></i>
+                                        @r.Color
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="variant-info variant-size">
+                                        <i class="bi bi-rulers"></i>
+                                        @r.Size
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="quantity-badge quantity-empty">@r.Quantity</span>
+                                </td>
+                                <td>
+                                    <span class="price-cell">@r.UnitSellPrice <small>ج.م</small></span>
+                                </td>
+                                <td>
+                                    <div class="cashier-name">
+                                        <span class="cashier-avatar">@initials</span>
+                                        @r.ProcessedByName
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="date-cell">
+                                        <span class="date-main">@returnDate.ToString("yyyy-MM-dd")</span>
+                                        <span class="date-time">@returnDate.ToString("HH:mm")</span>
                                     </div>
                                 </td>
                             </tr>

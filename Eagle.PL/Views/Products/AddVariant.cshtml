@@ -69,6 +69,30 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
+        /* Add Button */
+    .btn-add {
+        background-color: #212529;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #ffffff;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-add:hover {
+        background-color: #000000;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: #fff;
+    }
+
+
     /* Success Alert */
     .alert-success-custom {
         background-color: #d1e7dd;
@@ -107,8 +131,15 @@
     }
 
     @@keyframes slideDown {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     /* Section Wrapper */
@@ -420,6 +451,10 @@
             justify-content: center;
         }
 
+        .btn-add {
+            justify-content: center;
+        }
+
         .size-row {
             flex-direction: column;
             align-items: stretch;
@@ -452,10 +487,16 @@
             </h2>
             <p class="form-subtitle">@Model.ProductName — إدارة الألوان والمقاسات المتاحة</p>
         </div>
-        <a asp-controller="Products" asp-action="Index" class="btn-back">
-            <i class="bi bi-arrow-right"></i>
-            العودة إلى المخزون
-        </a>
+        <div class="d-flex gap-2 flex-wrap">
+            <a asp-controller="Products" asp-action="Details" asp-route-id="@Model.ProductId" class="btn-add">
+                <i class="bi bi-eye"></i>
+                العودة إلى تفاصيل الصنف
+            </a>
+            <a asp-controller="Products" asp-action="Index" class="btn-back">
+                <i class="bi bi-arrow-right"></i>
+                العودة إلى المخزون
+            </a>
+        </div>
     </div>
 
     <!-- Success Alert -->
@@ -496,9 +537,7 @@
                     @foreach (var c in Model.Colors)
                     {
                         var isActive = c == Model.SelectedColor;
-                        <a asp-action="AddVariant"
-                           asp-route-productId="@Model.ProductId"
-                           asp-route-color="@c"
+                        <a asp-action="AddVariant" asp-route-productId="@Model.ProductId" asp-route-color="@c"
                            class="color-chip @(isActive ? "active" : "")">
                             <i class="bi bi-palette"></i>
                             @c
@@ -513,9 +552,7 @@
 
             @if (!Model.ShowNewColorForm)
             {
-                <a asp-action="AddVariant"
-                   asp-route-productId="@Model.ProductId"
-                   asp-route-newColor="true"
+                <a asp-action="AddVariant" asp-route-productId="@Model.ProductId" asp-route-newColor="true"
                    class="add-new-link">
                     <i class="bi bi-plus-circle"></i>
                     إضافة لون جديد
@@ -525,7 +562,8 @@
             {
                 <form method="get" asp-action="AddVariant" class="inline-form">
                     <input type="hidden" name="productId" value="@Model.ProductId" />
-                    <input type="text" name="color" class="form-control" placeholder="اسم اللون الجديد" required autofocus />
+                    <input type="text" name="color" class="form-control" placeholder="اسم اللون الجديد" required
+                           autofocus />
                     <button type="submit" class="btn-primary-dark">
                         <i class="bi bi-arrow-left"></i>
                         التالي
@@ -543,7 +581,8 @@
                 <h5 class="section-title">
                     <i class="bi bi-rulers"></i>
                     مقاسات اللون:
-                    <span class="piece-code-badge" style="background-color: #f3e8ff; color: #7c3aed; border-color: #e9d5ff;">
+                    <span class="piece-code-badge"
+                          style="background-color: #f3e8ff; color: #7c3aed; border-color: #e9d5ff;">
                         <i class="bi bi-palette"></i> @Model.SelectedColor
                     </span>
                 </h5>
@@ -597,8 +636,10 @@
                 <form asp-action="AddVariant" method="post" class="inline-form">
                     <input type="hidden" name="ProductId" value="@Model.ProductId" />
                     <input type="hidden" name="Color" value="@Model.SelectedColor" />
-                    <input type="text" name="Size" class="form-control" placeholder="مقاس جديد (مثل: M, 42)" required style="max-width: 180px;" />
-                    <input type="number" name="StockQuantity" min="1" value="1" class="form-control" placeholder="الكمية" style="max-width: 140px;" />
+                    <input type="text" name="Size" class="form-control" placeholder="مقاس جديد (مثل: M, 42)" required
+                           style="max-width: 180px;" />
+                    <input type="number" name="StockQuantity" min="1" value="1" class="form-control" placeholder="الكمية"
+                           style="max-width: 140px;" />
                     <button type="submit" class="btn-primary-dark">
                         <i class="bi bi-plus-circle"></i>
                         إضافة

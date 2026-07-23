@@ -74,15 +74,20 @@ namespace Eagle.PL.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var product = await _productService.GetByIdAsync(id);
-            if (product is null) return NotFound();
+            if (product is null) 
+                return NotFound();
 
-            var history = await _saleService.GetSaleHistoryForProductAsync(id);
+            var saleHistory = await _saleService.GetSaleHistoryForProductAsync(id);
+            var returnHistory = await _saleService.GetReturnHistoryForProductAsync(id);
 
-            var detail = new ProductDetailDto(
+            var detail = new ProductDetailDto
+            (
                 product.Id, product.PieceCode, product.Name, product.Brand,
                 product.BuyPrice, product.SellPrice, product.CreatedAt,
                 product.Variants.Select(v => new VariantDto(v.Id, v.Color, v.Size, v.StockQuantity)).ToList(),
-                history);
+                saleHistory,
+                returnHistory
+            );
 
             return View(detail);
         }

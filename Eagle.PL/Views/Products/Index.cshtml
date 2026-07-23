@@ -244,11 +244,34 @@
         color: #212529;
     }
 
-    .brrand-name {
-        color: #6c757d;
-        font-weight: 700;
-        font-size: 1.25rem;
-        letter-spacing: 0.5px;
+    /* ========================================
+       SPECIAL BRAND LABEL SHAPE
+       ======================================== */
+    .brand-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background-color: #000000;
+        color: #ffffff;
+        /* border: 1.5px solid #50b42b; */
+        box-shadow: 0 2px 4px rgba(46, 174, 44, 0.03);
+        white-space: nowrap;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .brand-badge:hover {
+        border-color: #23c557;
+        box-shadow: 0 4px 6px rgb(75, 170, 38);
+        transform: translateY(-1px);
+    }
+
+    .brand-badge i {
+        color: #adb8c3;
+        font-size: 0.9rem;
     }
 
     .price-cell {
@@ -565,7 +588,9 @@
                                     <span class="product-name">@p.Name</span>
                                 </td>
                                 <td>
-                                    <span class="brrand-name">@(string.IsNullOrEmpty(p.Brand) ? "—" : p.Brand)</span>
+                                    <span class="brand-badge">
+                                        @(string.IsNullOrEmpty(p.Brand) ? "غير محدد" : p.Brand)
+                                    </span>
                                 </td>
                                 <td>
                                     <span class="price-cell">@p.BuyPrice <small>ج.م</small></span>
@@ -587,8 +612,7 @@
                                 </td>
                                 <td>
                                     <div class="action-buttons">
-                                        <a asp-controller="Products" asp-action="Details" asp-route-id="@p.Id"
-                                           class="btn-details">
+                                        <a asp-controller="Products" asp-action="Details" asp-route-id="@p.Id" class="btn-details">
                                             <i class="bi bi-eye"></i>
                                             التفاصيل
                                         </a>
@@ -598,6 +622,7 @@
                                         </a>
                                         <a asp-controller="Products" asp-action="AddVariant" asp-route-productId="@p.Id"
                                            class="btn-variant">
+                                        <a asp-controller="Products" asp-action="AddVariant" asp-route-productId="@p.Id" class="btn-variant">
                                             <i class="bi bi-plus-circle"></i>
                                             لون/مقاس
                                         </a>
