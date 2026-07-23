@@ -11,16 +11,19 @@ namespace Eagle.PL.Controllers
     {
         private readonly ProductService _productService;
         private readonly SaleService _saleService;
+        private readonly OverrideCodeService _overrideCodeService;
 
-        public ProductsController(ProductService productService, SaleService saleService)
+        public ProductsController(ProductService productService, SaleService saleService, OverrideCodeService overrideCodeService)
         {
             _productService = productService;
             _saleService = saleService;
+            _overrideCodeService = overrideCodeService;
         }
 
         public async Task<IActionResult> Index(string? search)
         {
             ViewBag.Search = search;
+            ViewBag.TodayOverrideCode = await _overrideCodeService.GetOrCreateTodayCodeAsync();
             return View(await _productService.GetAllAsync(search));
         }
 
@@ -74,7 +77,7 @@ namespace Eagle.PL.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var product = await _productService.GetByIdAsync(id);
-            if (product is null) 
+            if (product is null)
                 return NotFound();
 
             var saleHistory = await _saleService.GetSaleHistoryForProductAsync(id);
@@ -91,6 +94,7 @@ namespace Eagle.PL.Controllers
 
             return View(detail);
         }
+
         [HttpGet]
         public async Task<IActionResult> PrintLabel(int id)
         {

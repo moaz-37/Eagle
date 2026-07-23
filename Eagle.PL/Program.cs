@@ -29,6 +29,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<SaleService>();
+builder.Services.AddScoped<OverrideCodeService>();
 
 var app = builder.Build();
 
