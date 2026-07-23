@@ -8,7 +8,13 @@ namespace Eagle.BL.Services
     public class SaleService
     {
         private readonly EagleDbContext _db;
-        public SaleService(EagleDbContext db) => _db = db;
+        private readonly OverrideCodeService _overrideCodeService;
+
+        public SaleService(EagleDbContext db, OverrideCodeService overrideCodeService)
+        {
+            _db = db;
+            _overrideCodeService = overrideCodeService;
+        }
 
         public async Task<SaleResult> CreateSaleAsync(CreateSaleDto dto, Guid cashierId)
         {
@@ -26,7 +32,11 @@ namespace Eagle.BL.Services
                 return new SaleResult(false, $"Only {variant.StockQuantity} piece(s) available in this color/size.");
 
             if (dto.UnitSellPrice < variant.Product.BuyPrice)
-                return new SaleResult(false, "Sell price cannot be lower than the buy price.");
+            {
+                var isValidCode = await _overrideCodeService.ValidateCodeAsync(dto.OverrideCode);
+                if (!isValidCode)
+                    return new SaleResult(false, "سعر البيع أقل من سعر الشراء. يجب إدخال الكود اليومي الصحيح من المدير لإتمام العملية.");
+            }
 
             var user = await _db.Users.FindAsync(cashierId);
 
@@ -234,7 +244,6 @@ namespace Eagle.BL.Services
             );
         }
 
-
         public async Task<List<SaleReturnRecordDto>> GetReturnHistoryForProductAsync(int productId)
         {
             var returns = await _db.SaleReturns
@@ -250,6 +259,7 @@ namespace Eagle.BL.Services
                 r.ProcessedByNameSnapshot
             )).ToList();
         }
+
         public async Task<SaleRecordDto?> GetSaleReceiptAsync(int saleId)
         {
             var si = await _db.SaleItems

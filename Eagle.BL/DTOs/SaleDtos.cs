@@ -4,7 +4,8 @@ namespace Eagle.BL.DTOs
     (
         int ProductVariantId, 
         int Quantity, 
-        decimal UnitSellPrice
+        decimal UnitSellPrice, 
+        string? OverrideCode
     );
     public record SaleResult
     (
@@ -92,4 +93,5 @@ namespace Eagle.BL.DTOs
         decimal ProfitAmount, 
         string PersonName
     );
+    
 }
