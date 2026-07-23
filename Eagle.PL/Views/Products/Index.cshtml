@@ -44,6 +44,88 @@
         border: 1px solid #e9ecef;
     }
 
+    /* ========================================
+       Compact Daily Code Block
+       ======================================== */
+    .daily-code-block {
+        /* Glassmorphism effect */
+        background: rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        color: #000000;
+        border-radius: 14px;
+        padding: 0.4rem 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        min-width: 150px;
+        /* Multi-layer shadow for glass depth: outer shadow + inner highlight */
+        box-shadow:
+            0 8px 20px rgba(33, 37, 41, 0.35),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+        /* Glass border with subtle white highlight */
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        transition: all 0.3s ease-in-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Subtle shine overlay for extra glass feel */
+    .daily-code-block::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                transparent 100%);
+        transition: left 0.6s ease-in-out;
+        pointer-events: none;
+    }
+
+    .daily-code-block:hover::before {
+        left: 100%;
+    }
+
+    .daily-code-block:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.7);
+        box-shadow:
+            0 10px 24px rgba(20, 162, 56, 0.35),
+            inset 0 1px 0 rgba(255, 255, 255, 1),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.4);
+        border-color: rgba(20, 162, 56, 0.4);
+    }
+
+    .daily-code-label {
+        font-size: 0.7rem;
+        color: #3f3f3f;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0rem;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        white-space: nowrap;
+    }
+
+    .daily-code-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        font-family: 'Courier New', monospace;
+        color: #17893b;
+        /* Subtle text shadow to make the code pop against glass */
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+    }
+
     /* Add Button */
     .btn-add {
         background-color: #212529;
@@ -244,9 +326,7 @@
         color: #212529;
     }
 
-    /* ========================================
-       SPECIAL BRAND LABEL SHAPE
-       ======================================== */
+    /* Special Brand Label Shape */
     .brand-badge {
         display: inline-flex;
         align-items: center;
@@ -257,15 +337,14 @@
         font-weight: 600;
         background-color: #000000;
         color: #ffffff;
-        /* border: 1.5px solid #50b42b; */
         box-shadow: 0 2px 4px rgba(46, 174, 44, 0.03);
         white-space: nowrap;
         transition: all 0.2s ease-in-out;
     }
 
     .brand-badge:hover {
-        border-color: #23c557;
-        box-shadow: 0 4px 6px rgb(75, 170, 38);
+        border: 1.5px solid #23c557;
+        box-shadow: 0 4px 6px rgba(75, 170, 38, 0.3);
         transform: translateY(-1px);
     }
 
@@ -369,7 +448,7 @@
         color: #ffffff;
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
+    }
 
     .btn-icon {
         width: 38px;
@@ -388,13 +467,14 @@
         text-decoration: none;
     }
 
-        .btn-icon:hover {
-            background-color: #212529;
-            border-color: #212529;
-            color: #ffffff;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
+    .btn-icon:hover {
+        background-color: #212529;
+        border-color: #212529;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
     /* Empty State */
     .empty-state {
         text-align: center;
@@ -444,6 +524,11 @@
             justify-content: center;
         }
 
+        /* Make daily code horizontal on mobile to save vertical space */
+        .daily-code-block {
+        width: 100%;
+    }
+
         .table-header {
             flex-direction: column;
             align-items: stretch;
@@ -488,6 +573,17 @@
             </h2>
             <p class="form-subtitle">إدارة الأصناف والمنتجات المتاحة</p>
         </div>
+
+        <!-- Compact Daily Code Block -->
+        <div class="daily-code-block" title="هذا الكود يتغير يومياً. لا تشاركه إلا مع الكاشير عند الحاجة الفعلية">
+            <div class="daily-code-label">
+                <i class="bi bi-shield-lock"></i> الكود اليومي للبيع أقل من سعر الشراء
+            </div>
+            <div class="daily-code-value">@ViewBag.TodayOverrideCode</div>
+            <i class="bi bi-shield-alert"></i> لا تشاركه مع الكاشير إلا عند الحاجة
+
+        </div>
+
         <a asp-controller="Products" asp-action="Create" class="btn-add">
             <i class="bi bi-plus-circle"></i>
             إضافة صنف جديد
@@ -612,14 +708,17 @@
                                 </td>
                                 <td>
                                     <div class="action-buttons">
-                                        <a asp-controller="Products" asp-action="Details" asp-route-id="@p.Id" class="btn-details">
+                                        <a asp-controller="Products" asp-action="Details" asp-route-id="@p.Id"
+                                           class="btn-details">
                                             <i class="bi bi-eye"></i>
                                             التفاصيل
                                         </a>
-                                        <a asp-controller="Products" asp-action="PrintLabel" asp-route-id="@p.Id" class="btn-icon" target="_blank" title="طباعة ملصق">
+                                        <a asp-controller="Products" asp-action="PrintLabel" asp-route-id="@p.Id"
+                                           class="btn-icon" target="_blank" title="طباعة ملصق">
                                             <i class="bi bi-printer"></i>
                                         </a>
-                                        <a asp-controller="Products" asp-action="AddVariant" asp-route-productId="@p.Id" class="btn-variant">
+                                        <a asp-controller="Products" asp-action="AddVariant" asp-route-productId="@p.Id"
+                                           class="btn-variant">
                                             <i class="bi bi-plus-circle"></i>
                                             لون/مقاس
                                         </a>
