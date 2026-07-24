@@ -1,4 +1,4 @@
-﻿@model Eagle.BL.DTOs.SaleRecordDto
+﻿@model Eagle.BL.DTOs.SaleReceiptDto
 @{
     Layout = null;
 }
@@ -8,100 +8,117 @@
     <meta charset="utf-8" />
     <title>إيصال بيع</title>
     <style>
-            @@page {
-                size: 58mm auto;
-                margin: 0;
-            }
+        @@page {
+            size: 58mm auto;
+            margin: 0;
+        }
 
-            * {
-                box-sizing: border-box;
-            }
+        * {
+            box-sizing: border-box;
+        }
 
-            html, body {
-                margin: 0;
-                padding: 0;
-                width: 58mm;
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 58mm;
+        }
+
+        .receipt {
+            width: 58mm;
+            padding: 2mm 3mm;
+            font-family: 'Courier New', monospace;
+            color: #000;
+        }
+
+        .logo {
+            display: block;
+            max-width: 28mm;
+            max-height: 20mm;
+            margin: 0 auto 1mm;
+        }
+
+        .store-name {
+            text-align: center;
+            font-weight: 700;
+            font-size: 13pt;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .meta {
+            text-align: center;
+            font-size: 7.5pt;
+            margin-top: 1mm;
+        }
+
+        .divider {
+            border-top: 1px dashed #000;
+            margin: 2mm 0;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 8.5pt;
+            margin-bottom: 0.8mm;
+        }
+
+        .row .label {
+            color: #000;
+        }
+
+        .row .value {
+            font-weight: 700;
+        }
+
+        .item-block {
+            margin-bottom: 1.5mm;
+        }
+
+        .item-name {
+            font-size: 9pt;
+            font-weight: 700;
+            margin-bottom: 0.5mm;
+        }
+
+        .item-divider {
+            border-top: 1px dotted #999;
+            margin: 1mm 0;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11pt;
+            font-weight: 700;
+            margin-top: 1mm;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 7.5pt;
+            margin-top: 3mm;
+        }
+
+        @@media screen {
+            body {
+                background: #ccc;
+                display: flex;
+                justify-content: center;
+                padding: 20px 0;
+                width: auto;
             }
 
             .receipt {
-                width: 58mm;
-                padding: 2mm 3mm;
-                font-family: 'Courier New', monospace;
-                color: #000;
+                background: #fff;
+                box-shadow: 0 0 6px rgba(0,0,0,0.3);
             }
-
-            .store-name {
-                text-align: center;
-                font-weight: 700;
-                font-size: 13pt;
-                letter-spacing: 1px;
-                text-transform: uppercase;
-            }
-
-            .meta {
-                text-align: center;
-                font-size: 7.5pt;
-                margin-top: 1mm;
-            }
-
-            .divider {
-                border-top: 1px dashed #000;
-                margin: 2mm 0;
-            }
-
-            .row {
-                display: flex;
-                justify-content: space-between;
-                font-size: 8.5pt;
-                margin-bottom: 0.8mm;
-            }
-
-                .row .label {
-                    color: #000;
-                }
-
-                .row .value {
-                    font-weight: 700;
-                }
-
-            .item-name {
-                font-size: 9pt;
-                font-weight: 700;
-                margin-bottom: 1mm;
-            }
-
-            .total-row {
-                display: flex;
-                justify-content: space-between;
-                font-size: 11pt;
-                font-weight: 700;
-                margin-top: 1mm;
-            }
-
-            .footer {
-                text-align: center;
-                font-size: 7.5pt;
-                margin-top: 3mm;
-            }
-
-            @@media screen {
-                body {
-                    background: #ccc;
-                    display: flex;
-                    justify-content: center;
-                    padding: 20px 0;
-                    width: auto;
-                }
-
-                .receipt {
-                    background: #fff;
-                    box-shadow: 0 0 6px rgba(0,0,0,0.3);
-                }
-            }
+        }
     </style>
 </head>
 <body>
     <div class="receipt">
+        <img src="~/images/Eagle.png" alt="Eagle Logo" class="logo" />
         <div class="store-name">Eagle</div>
         <div class="meta">
             رقم الإيصال: #@Model.SaleId<br />
@@ -110,25 +127,39 @@
 
         <div class="divider"></div>
 
-        <div class="item-name">@Model.ProductName (@Model.PieceCode)</div>
-        <div class="row">
-            <span class="label">اللون / المقاس</span>
-            <span class="value">@Model.Color - @Model.Size</span>
-        </div>
-        <div class="row">
-            <span class="label">الكمية</span>
-            <span class="value">@Model.Quantity</span>
-        </div>
-        <div class="row">
-            <span class="label">سعر الوحدة</span>
-            <span class="value">@Model.UnitSellPrice ج.م</span>
-        </div>
+        @foreach (var item in Model.Items)
+        {
+            <div class="item-block">
+                <div class="item-name">@item.ProductName (@item.PieceCode)</div>
+                <div class="row">
+                    <span class="label">اللون / المقاس</span>
+                    <span class="value">@item.Color - @item.Size</span>
+                </div>
+                <div class="row">
+                    <span class="label">الكمية</span>
+                    <span class="value">@item.Quantity</span>
+                </div>
+                <div class="row">
+                    <span class="label">سعر الوحدة</span>
+                    <span class="value">@item.UnitSellPrice ج.م</span>
+                </div>
+                <div class="row">
+                    <span class="label">إجمالي الصنف</span>
+                    <span class="value">@item.LineTotal ج.م</span>
+                </div>
+            </div>
+
+            if (item != Model.Items.Last())
+            {
+                <div class="item-divider"></div>
+            }
+        }
 
         <div class="divider"></div>
 
         <div class="total-row">
-            <span>الإجمالي</span>
-            <span>@Model.LineTotal ج.م</span>
+            <span>الإجمالي الكلي</span>
+            <span>@Model.TotalAmount ج.م</span>
         </div>
 
         <div class="divider"></div>
@@ -140,9 +171,9 @@
     </div>
 
     <script>
-            window.onload = function () {
-                window.print();
-            };
+        window.onload = function () {
+            window.print();
+        };
     </script>
 </body>
 </html>

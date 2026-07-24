@@ -18,24 +18,57 @@ namespace Eagle.BL.Services
 
         public async Task<SaleResult> CreateSaleAsync(CreateSaleDto dto, Guid cashierId)
         {
-            var variant = await _db.ProductVariants
+            if (dto.Items is null || dto.Items.Count == 0)
+                return new SaleResult(false, "لا توجد أصناف في عملية البيع.");
+
+            var variantIds = dto.Items.Select(i => i.ProductVariantId).Distinct().ToList();
+            var variants = await _db.ProductVariants
                 .Include(v => v.Product)
-                .FirstOrDefaultAsync(v => v.Id == dto.ProductVariantId);
+                .Where(v => variantIds.Contains(v.Id))
+                .ToDictionaryAsync(v => v.Id);
 
-            if (variant is null)
-                return new SaleResult(false, "Variant not found.");
+            // Merge duplicate lines for the same variant (in case the client sends two rows for it)
+            var mergedItems = dto.Items
+                .GroupBy(i => i.ProductVariantId)
+                .Select(g => new CreateSaleItemDto(
+                    g.Key,
+                    g.Sum(i => i.Quantity),
+                    g.First().UnitSellPrice,
+                    g.First().OverrideCode))
+                .ToList();
 
-            if (dto.Quantity <= 0)
-                return new SaleResult(false, "Quantity must be greater than zero.");
+            var saleItems = new List<SaleItem>();
+            decimal total = 0;
 
-            if (variant.StockQuantity < dto.Quantity)
-                return new SaleResult(false, $"Only {variant.StockQuantity} piece(s) available in this color/size.");
-
-            if (dto.UnitSellPrice < variant.Product.BuyPrice)
+            foreach (var item in mergedItems)
             {
-                var isValidCode = await _overrideCodeService.ValidateCodeAsync(dto.OverrideCode);
-                if (!isValidCode)
-                    return new SaleResult(false, "سعر البيع أقل من سعر الشراء. يجب إدخال الكود اليومي الصحيح من المدير لإتمام العملية.");
+                if (!variants.TryGetValue(item.ProductVariantId, out var variant))
+                    return new SaleResult(false, "أحد الأصناف غير موجود.");
+
+                if (item.Quantity <= 0)
+                    return new SaleResult(false, $"الكمية غير صحيحة للصنف {variant.Product.PieceCode}.");
+
+                if (variant.StockQuantity < item.Quantity)
+                    return new SaleResult(false,
+                        $"الكمية المتاحة من {variant.Product.PieceCode} ({variant.Color} - {variant.Size}) هي {variant.StockQuantity} فقط.");
+
+                if (item.UnitSellPrice < variant.Product.BuyPrice)
+                {
+                    var isValidCode = await _overrideCodeService.ValidateCodeAsync(item.OverrideCode);
+                    if (!isValidCode)
+                        return new SaleResult(false,
+                            $"سعر البيع أقل من سعر الشراء للصنف {variant.Product.PieceCode}. يجب إدخال الكود اليومي الصحيح من المدير.");
+                }
+
+                saleItems.Add(new SaleItem
+                {
+                    ProductVariantId = variant.Id,
+                    Quantity = item.Quantity,
+                    UnitSellPrice = item.UnitSellPrice,
+                    UnitBuyPrice = variant.Product.BuyPrice
+                });
+
+                total += item.UnitSellPrice * item.Quantity;
             }
 
             var user = await _db.Users.FindAsync(cashierId);
@@ -45,19 +78,14 @@ namespace Eagle.BL.Services
                 SaleDate = DateTime.UtcNow,
                 UserId = cashierId,
                 CashierNameSnapshot = user?.FullName ?? "غير معروف",
-                TotalAmount = dto.UnitSellPrice * dto.Quantity
+                TotalAmount = total
             };
 
-            sale.SaleItems.Add(
-                new SaleItem
-                {
-                    ProductVariantId = variant.Id,
-                    Quantity = dto.Quantity,
-                    UnitSellPrice = dto.UnitSellPrice,
-                    UnitBuyPrice = variant.Product.BuyPrice
-                });
+            foreach (var si in saleItems)
+                sale.SaleItems.Add(si);
 
-            variant.StockQuantity -= dto.Quantity;
+            foreach (var item in mergedItems)
+                variants[item.ProductVariantId].StockQuantity -= item.Quantity;
 
             _db.Sales.Add(sale);
             await _db.SaveChangesAsync();
@@ -260,21 +288,21 @@ namespace Eagle.BL.Services
             )).ToList();
         }
 
-        public async Task<SaleRecordDto?> GetSaleReceiptAsync(int saleId)
+        public async Task<SaleReceiptDto?> GetSaleReceiptAsync(int saleId)
         {
-            var si = await _db.SaleItems
-                .Include(x => x.Sale)
-                .Include(x => x.ProductVariant).ThenInclude(v => v.Product)
-                .FirstOrDefaultAsync(x => x.Sale.Id == saleId);
+            var sale = await _db.Sales
+                .Include(s => s.SaleItems).ThenInclude(si => si.ProductVariant).ThenInclude(v => v.Product)
+                .FirstOrDefaultAsync(s => s.Id == saleId);
 
-            if (si is null) return null;
+            if (sale is null) return null;
 
-            return new SaleRecordDto(
-                si.Sale.Id, si.Sale.SaleDate,
-                si.ProductVariant.Product.PieceCode, si.ProductVariant.Product.Name,
-                si.ProductVariant.Color, si.ProductVariant.Size,
-                si.Quantity, si.UnitSellPrice, si.UnitSellPrice * si.Quantity,
-                si.Sale.CashierNameSnapshot
+            return new SaleReceiptDto(
+                sale.Id, sale.SaleDate, sale.CashierNameSnapshot, sale.TotalAmount,
+                sale.SaleItems.Select(si => new SaleReceiptItemDto(
+                    si.ProductVariant.Product.PieceCode, si.ProductVariant.Product.Name,
+                    si.ProductVariant.Color, si.ProductVariant.Size,
+                    si.Quantity, si.UnitSellPrice, si.UnitSellPrice * si.Quantity
+                )).ToList()
             );
         }
     }

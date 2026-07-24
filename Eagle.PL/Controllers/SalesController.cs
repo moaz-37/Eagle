@@ -20,38 +20,38 @@ namespace Eagle.PL.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create(string? pieceCode)
+        public IActionResult Create()
         {
-            ViewBag.PieceCode = pieceCode;
-            if (!string.IsNullOrWhiteSpace(pieceCode))
-            {
-                var product = await _productService.LookupByPieceCodeAsync(pieceCode.Trim());
-                if (product is null)
-                    ModelState.AddModelError(string.Empty, "لا يوجد صنف بهذا الكود");
-                return View(product);
-            }
-            return View((ProductLookupResult?)null);
+            return View();
+        }
+
+        // JSON lookup used by the client-side cart to fetch product + variants for a piece code
+        [HttpGet]
+        public async Task<IActionResult> LookupJson(string pieceCode)
+        {
+            if (string.IsNullOrWhiteSpace(pieceCode))
+                return Json(null);
+
+            var product = await _productService.LookupByPieceCodeAsync(pieceCode.Trim());
+            return Json(product);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateSaleDto dto, string pieceCode)
+        public async Task<IActionResult> Create([FromBody] CreateSaleDto dto)
         {
             var cashierId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var result = await _saleService.CreateSaleAsync(dto, cashierId);
 
             if (!result.Succeeded)
-            {
-                ModelState.AddModelError(string.Empty, result.Error!);
-                var product = await _productService.LookupByPieceCodeAsync(pieceCode);
-                ViewBag.PieceCode = pieceCode;
-                return View(product);
-            }
+                return Json(new { succeeded = false, error = result.Error });
 
             TempData["Success"] = "تم تسجيل عملية البيع بنجاح";
             TempData["LastSaleId"] = result.SaleId;
-            return RedirectToAction("Create");
+
+            return Json(new { succeeded = true, saleId = result.SaleId });
         }
+
         [HttpGet]
         public async Task<IActionResult> PrintReceipt(int id)
         {
@@ -60,6 +60,7 @@ namespace Eagle.PL.Controllers
 
             return View(receipt);
         }
+
         [HttpGet]
         public async Task<IActionResult> History(DateTime? from, DateTime? to, Guid? cashierId)
         {

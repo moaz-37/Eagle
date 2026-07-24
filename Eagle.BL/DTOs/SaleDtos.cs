@@ -1,52 +1,77 @@
 namespace Eagle.BL.DTOs
 {
+    public record CreateSaleItemDto
+    (
+        int ProductVariantId,
+        int Quantity,
+        decimal UnitSellPrice,
+        string? OverrideCode
+    );
+
     public record CreateSaleDto
     (
-        int ProductVariantId, 
-        int Quantity, 
-        decimal UnitSellPrice, 
-        string? OverrideCode
+        List<CreateSaleItemDto> Items
+    );
+
+    public record SaleReceiptItemDto
+    (
+        string PieceCode,
+        string ProductName,
+        string Color,
+        string Size,
+        int Quantity,
+        decimal UnitSellPrice,
+        decimal LineTotal
+    );
+
+    public record SaleReceiptDto
+    (
+        int SaleId,
+        DateTime SaleDate,
+        string CashierName,
+        decimal TotalAmount,
+        List<SaleReceiptItemDto> Items
     );
     public record SaleResult
     (
-        bool Succeeded, 
-        string? Error, 
+        bool Succeeded,
+        string? Error,
         int? SaleId = null
     );
     public record SaleStatsFilter
     (
-        DateTime? From, 
-        DateTime? To, 
+        DateTime? From,
+        DateTime? To,
         Guid? CashierId
     );
 
     public record SaleStatsSummary
     (
-        int SalesCount, 
-        int PiecesSold, 
-        decimal TotalRevenue, 
+        int SalesCount,
+        int PiecesSold,
+        decimal TotalRevenue,
         decimal TotalProfit,
         List<CashierBreakdown> ByCashier
     );
 
     public record CashierBreakdown
     (
-        string CashierName, 
-        int SalesCount, 
-        decimal Revenue, 
+        string CashierName,
+        int SalesCount,
+        decimal Revenue,
         decimal Profit
     );
 
     public record SaleRecordDto
     (
-        int SaleId, 
+        int SaleId,
         DateTime SaleDate,
-        string PieceCode, 
-        string ProductName, 
-        string Color, 
+        string PieceCode,
+        string ProductName,
+        string Color,
         string Size,
-        int Quantity, 
-        decimal UnitSellPrice, 
+        int Quantity,
+        decimal UnitSellPrice,
         decimal LineTotal,
         string CashierName
     );
@@ -54,44 +79,44 @@ namespace Eagle.BL.DTOs
     // Return / Retry
     public record SaleItemForReturnDto
     (
-        int SaleItemId, 
-        DateTime SaleDate, 
-        string PieceCode, 
+        int SaleItemId,
+        DateTime SaleDate,
+        string PieceCode,
         string ProductName,
-        string Color, 
-        string Size, 
-        int QuantitySold, 
-        int QuantityReturned, 
+        string Color,
+        string Size,
+        int QuantitySold,
+        int QuantityReturned,
         int QuantityRemaining,
-        decimal UnitSellPrice, 
+        decimal UnitSellPrice,
         string CashierName
     );
 
     public record CreateReturnDto
     (
-        int SaleItemId, 
+        int SaleItemId,
         int Quantity
     );
     public record ReturnResult
     (
-        bool Succeeded, 
-        string? Error, 
+        bool Succeeded,
+        string? Error,
         int? ReturnId = null
     );
 
     // Combined timeline: sale (positive profit) + return/retry (negative profit)
     public record SaleTimelineEntryDto
     (
-        string Type, 
-        DateTime Date, 
-        string PieceCode, 
+        string Type,
+        DateTime Date,
+        string PieceCode,
         string ProductName,
-        string Color, 
-        string Size, 
-        int Quantity, 
+        string Color,
+        string Size,
+        int Quantity,
         decimal UnitPrice,
-        decimal ProfitAmount, 
+        decimal ProfitAmount,
         string PersonName
     );
-    
+
 }
