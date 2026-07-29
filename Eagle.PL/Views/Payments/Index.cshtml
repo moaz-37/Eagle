@@ -1,0 +1,553 @@
+@model List<Eagle.BL.DTOs.SaleBalanceDto>
+@{
+    ViewData["Title"] = "الحسابات الآجلة";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-subtitle {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .badge-count {
+        background-color: #f8f9fa;
+        color: #212529;
+        font-weight: 600;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        border: 1px solid #e9ecef;
+    }
+
+    /* Table Wrapper */
+    .table-wrapper {
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .table-header {
+        background-color: #f8f9fa;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .table-title {
+        color: #212529;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .table-total {
+        color: #6c757d;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .table-total strong {
+        color: #842029;
+        font-weight: 700;
+    }
+
+    /* Search Form in Header */
+    .search-form {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        margin: 0;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+    }
+
+    .search-input-wrapper .form-control {
+        border-radius: 10px;
+        border: 1.5px solid #e9ecef;
+        padding: 8px 40px 8px 15px;
+        font-size: 0.9rem;
+        background-color: #ffffff;
+        transition: all 0.2s ease-in-out;
+        min-width: 280px;
+        height: 42px;
+    }
+
+    .search-input-wrapper .form-control:focus {
+        border-color: #212529;
+        box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.1);
+        background-color: #ffffff;
+    }
+
+    .search-input-wrapper .input-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        font-size: 1rem;
+        pointer-events: none;
+        transition: color 0.2s ease-in-out;
+    }
+
+    .search-input-wrapper:focus-within .input-icon {
+        color: #212529;
+    }
+
+    .btn-search {
+        background-color: #ffffff;
+        border: 1.5px solid #212529;
+        border-radius: 10px;
+        padding: 8px 18px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #212529;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        height: 42px;
+        white-space: nowrap;
+    }
+
+    .btn-search:hover {
+        background-color: #212529;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-clear {
+        background-color: transparent;
+        border: 1.5px solid #e9ecef;
+        border-radius: 10px;
+        padding: 8px 12px;
+        color: #6c757d;
+        transition: all 0.2s ease-in-out;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+    }
+
+    .btn-clear:hover {
+        border-color: #dc3545;
+        color: #dc3545;
+        background-color: #fff5f5;
+    }
+
+    /* Modern Table */
+    .balance-table {
+        margin: 0;
+        width: 100%;
+    }
+
+    .balance-table thead th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem 1.25rem;
+        border-bottom: 2px solid #e9ecef;
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    .balance-table thead th i {
+        margin-left: 0.35rem;
+        color: #adb5bd;
+        font-size: 0.9rem;
+    }
+
+    .balance-table tbody td {
+        padding: 1.15rem 1.25rem;
+        color: #212529;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #f1f3f5;
+        vertical-align: middle;
+    }
+
+    .balance-table tbody tr {
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .balance-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .balance-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Customer Cell */
+    .customer-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .customer-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #212529;
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        letter-spacing: 0.5px;
+    }
+
+    .customer-name {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    /* Phone Cell */
+    .phone-cell {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #495057;
+        font-family: 'Courier New', monospace;
+        font-weight: 500;
+        font-size: 0.9rem;
+        direction: ltr;
+    }
+
+    .phone-cell i {
+        color: #adb5bd;
+        font-size: 0.95rem;
+    }
+
+    /* Amount Cells */
+    .amount-cell {
+        font-weight: 700;
+        white-space: nowrap;
+        padding: 0.35rem 0.75rem;
+        border-radius: 8px;
+        display: inline-block;
+    }
+
+    .amount-cell small {
+        font-weight: 400;
+        font-size: 0.8rem;
+        margin-right: 0.25rem;
+    }
+
+    .amount-total {
+        background-color: #f8f9fa;
+        color: #212529;
+        border: 1px solid #e9ecef;
+    }
+
+    .amount-paid {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .amount-remaining {
+        background-color: #f8d7da;
+        color: #842029;
+        font-size: 1rem;
+    }
+
+    /* Date Cell */
+    .date-cell {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: #495057;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .date-cell i {
+        color: #adb5bd;
+        font-size: 1rem;
+    }
+
+    /* Details Button */
+    .btn-details {
+        background-color: #ffffff;
+        border: 1.5px solid #212529;
+        border-radius: 8px;
+        padding: 0.4rem 0.9rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #212529;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .btn-details:hover {
+        background-color: #212529;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1.5rem;
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .empty-state-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: #adb5bd;
+        font-size: 2.5rem;
+    }
+
+    .empty-state h5 {
+        color: #212529;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin: 0;
+    }
+
+    /* Responsive Table */
+    .table-responsive-wrapper {
+        overflow-x: auto;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .table-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-form {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .search-input-wrapper .form-control {
+            min-width: 0;
+            width: 100%;
+        }
+
+        .balance-table thead th,
+        .balance-table tbody td {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .customer-avatar {
+            width: 34px;
+            height: 34px;
+            font-size: 0.75rem;
+        }
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title-group">
+            <h2 class="form-title">
+                <i class="bi bi-wallet2"></i>
+                الحسابات الآجلة
+                <span class="badge-count">@Model.Count عميل</span>
+            </h2>
+            <p class="form-subtitle">العملاء الذين لديهم مبالغ متبقية غير مسددة</p>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <h5>لا توجد مبالغ متبقية حالياً</h5>
+            <p>جميع الحسابات مسددة بالكامل</p>
+        </div>
+    }
+    else
+    {
+        <!-- Balance Table -->
+        <div class="table-wrapper">
+            <div class="table-header">
+                <h5 class="table-title">
+                    <i class="bi bi-list-ul"></i>
+                    قائمة الحسابات الآجلة
+                </h5>
+
+                <!-- Search Form -->
+                <form method="get" class="search-form">
+                    <div class="search-input-wrapper">
+                        <input type="text" name="search" class="form-control"
+                               placeholder="اسم العميل / رقم الهاتف"
+                               value="@ViewBag.Search" />
+                        <i class="bi bi-search input-icon"></i>
+                    </div>
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                        بحث
+                    </button>
+                    @if (!string.IsNullOrEmpty(ViewBag.Search?.ToString()))
+                    {
+                        <a asp-action="Index" class="btn-clear" title="مسح البحث">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    }
+                </form>
+            </div>
+
+            <div class="table-responsive-wrapper">
+                <table class="balance-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="bi bi-person"></i>
+                                العميل
+                            </th>
+                            <th>
+                                <i class="bi bi-telephone"></i>
+                                الهاتف
+                            </th>
+                            <th>
+                                <i class="bi bi-receipt"></i>
+                                الإجمالي
+                            </th>
+                            <th>
+                                <i class="bi bi-cash-coin"></i>
+                                المدفوع
+                            </th>
+                            <th>
+                                <i class="bi bi-exclamation-triangle"></i>
+                                المتبقي
+                            </th>
+                            <th>
+                                <i class="bi bi-calendar-event"></i>
+                                تاريخ البيع
+                            </th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model)
+                        {
+                            var initials = string.IsNullOrEmpty(s.CustomerName) ? "?" :
+                                s.CustomerName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a + b).ToUpper();
+                            var saleDate = s.SaleDate.ToLocalTime();
+                            <tr>
+                                <td>
+                                    <div class="customer-cell">
+                                        <span class="customer-avatar">@initials</span>
+                                        <span class="customer-name">@s.CustomerName</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="phone-cell">
+                                        <i class="bi bi-telephone"></i>
+                                        @s.CustomerPhone
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="amount-cell amount-total">
+                                        @s.TotalAmount <small>ج.م</small>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="amount-cell amount-paid">
+                                        @s.AmountPaid <small>ج.م</small>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="amount-cell amount-remaining">
+                                        @s.RemainingAmount <small>ج.م</small>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="date-cell">
+                                        <i class="bi bi-calendar-event"></i>
+                                        @saleDate.ToString("yyyy-MM-dd")
+                                    </span>
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-saleId="@s.SaleId" class="btn-details">
+                                        <i class="bi bi-eye"></i>
+                                        التفاصيل
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
