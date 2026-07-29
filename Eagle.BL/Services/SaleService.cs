@@ -313,17 +313,17 @@ namespace Eagle.BL.Services
             )).ToList();
         }
 
-        public async Task<SaleBalanceDto?> GetSaleBalanceAsync(int saleId)
+        public async Task<SaleReceiptDto?> GetSaleReceiptAsync(int saleId)
         {
             var sale = await _db.Sales
                 .Include(s => s.Customer)
                 .Include(s => s.SaleItems).ThenInclude(si => si.ProductVariant).ThenInclude(v => v.Product)
                 .FirstOrDefaultAsync(s => s.Id == saleId);
 
-            return sale is null ? null : MapToBalanceDto(sale);
+            return sale is null ? null : MapToReceiptDto(sale);
         }
 
-        public async Task<List<SaleBalanceDto>> GetOutstandingSalesAsync(string? search)
+        public async Task<List<SaleReceiptDto>> GetOutstandingSalesAsync(string? search)
         {
             var query = _db.Sales
                 .Include(s => s.Customer)
@@ -340,7 +340,7 @@ namespace Eagle.BL.Services
             }
 
             var sales = await query.OrderBy(s => s.SaleDate).ToListAsync();
-            return sales.Select(MapToBalanceDto).ToList();
+            return sales.Select(MapToReceiptDto).ToList();
         }
 
         public async Task<PaymentResult> AddPaymentAsync(AddPaymentDto dto, Guid userId)
@@ -370,16 +370,15 @@ namespace Eagle.BL.Services
             return new PaymentResult(true, null);
         }
 
-        private static SaleBalanceDto MapToBalanceDto(Sale sale) => new(
-            sale.Id, sale.SaleDate,
-            sale.Customer?.Name ?? "عميل نقدي",
-            sale.Customer?.Phone,
+        private static SaleReceiptDto MapToReceiptDto(Sale sale) => new(
+            sale.Id, sale.SaleDate, sale.CashierNameSnapshot, sale.PaymentType,
+            sale.Customer?.Name ?? "عميل نقدي", sale.Customer?.Phone,
             sale.TotalAmount, sale.AmountPaid, sale.TotalAmount - sale.AmountPaid,
             sale.AmountPaid >= sale.TotalAmount,
-            sale.CashierNameSnapshot,
-            sale.SaleItems.Select(si => new SaleLineDto(
+            sale.SaleItems.Select(si => new SaleReceiptItemDto(
                 si.ProductVariant.Product.PieceCode, si.ProductVariant.Product.Name,
-                si.ProductVariant.Color, si.ProductVariant.Size, si.Quantity, si.UnitSellPrice
+                si.ProductVariant.Color, si.ProductVariant.Size, si.Quantity, si.UnitSellPrice,
+                si.Quantity * si.UnitSellPrice
             )).ToList());
     }
 }

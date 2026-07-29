@@ -1,6 +1,7 @@
 namespace Eagle.BL.DTOs
 {
-    public record CreateSaleItemDto
+    // Cart submission
+    public record SaleItemInputDto
     (
         int ProductVariantId,
         int Quantity,
@@ -8,11 +9,16 @@ namespace Eagle.BL.DTOs
         string? OverrideCode
     );
 
-    public record CreateSaleDto
+    public record CreateSaleRequestDto
     (
-        List<CreateSaleItemDto> Items
+        List<SaleItemInputDto> Items,
+        string PaymentType, // "Cash" or "Credit"
+        string? CustomerName,
+        string? CustomerPhone,
+        decimal? AmountPaidNow
     );
 
+    // Unified receipt / balance DTO — used for printing AND for checking payment status
     public record SaleReceiptItemDto
     (
         string PieceCode,
@@ -29,15 +35,23 @@ namespace Eagle.BL.DTOs
         int SaleId,
         DateTime SaleDate,
         string CashierName,
+        string PaymentType,
+        string CustomerName,
+        string? CustomerPhone,
         decimal TotalAmount,
+        decimal AmountPaid,
+        decimal RemainingAmount,
+        bool IsFullyPaid,
         List<SaleReceiptItemDto> Items
     );
+
     public record SaleResult
     (
         bool Succeeded,
         string? Error,
         int? SaleId = null
     );
+
     public record SaleStatsFilter
     (
         DateTime? From,
@@ -97,6 +111,7 @@ namespace Eagle.BL.DTOs
         int SaleItemId,
         int Quantity
     );
+
     public record ReturnResult
     (
         bool Succeeded,
@@ -119,4 +134,16 @@ namespace Eagle.BL.DTOs
         string PersonName
     );
 
+    // Payments
+    public record AddPaymentDto
+    (
+        int SaleId,
+        decimal Amount
+    );
+
+    public record PaymentResult
+    (
+        bool Succeeded,
+        string? Error
+    );
 }

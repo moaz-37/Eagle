@@ -55,7 +55,7 @@ namespace Eagle.PL.Controllers
         [HttpGet]
         public async Task<IActionResult> PrintReceipt(int id)
         {
-            var receipt = await _saleService.GetSaleBalanceAsync(id);
+            var receipt = await _saleService.GetSaleReceiptAsync(id);
             if (receipt is null) return NotFound();
 
             return View(receipt);

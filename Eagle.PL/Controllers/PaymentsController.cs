@@ -22,9 +22,9 @@ namespace Eagle.PL.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int saleId)
         {
-            var balance = await _saleService.GetSaleBalanceAsync(saleId);
-            if (balance is null) return NotFound();
-            return View(balance);
+            var receipt = await _saleService.GetSaleReceiptAsync(saleId);
+            if (receipt is null) return NotFound();
+            return View(receipt);
         }
 
         [HttpPost]
