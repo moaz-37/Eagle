@@ -61,6 +61,12 @@
                                     إرجاع قطعة
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Payments" asp-action="Index">
+                                    <i class="bi bi-wallet"></i>
+                                    الحسابات الآجلة
+                                </a>
+                            </li>
 
                             @if (User.IsInRole("Manager"))
                             {
