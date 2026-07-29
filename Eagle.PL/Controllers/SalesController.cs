@@ -62,7 +62,7 @@ namespace Eagle.PL.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> History(DateTime? from, DateTime? to, Guid? cashierId, int overdueDays = 30)
+        public async Task<IActionResult> History(DateTime? from, DateTime? to, Guid? cashierId)
         {
             Guid? effectiveCashierId = cashierId;
             if (!User.IsInRole("Manager"))
@@ -73,13 +73,12 @@ namespace Eagle.PL.Controllers
             var vm = new TimelinePageViewModel
             {
                 Entries = entries,
-                TotalProfit = entries.Sum(e => e.ProfitAmount),
-                OverdueDaysThreshold = overdueDays
+                TotalProfit = entries.Sum(e => e.ProfitAmount)
             };
 
-            // Only managers see overdue accounts — cashiers get the sales/returns timeline only
+            // Always show every unpaid credit sale, independent of the date/cashier filters above
             if (User.IsInRole("Manager"))
-                vm.OverduePayments = await _saleService.GetOverduePaymentsAsync(overdueDays);
+                vm.OverduePayments = await _saleService.GetOutstandingSalesAsync(null);
 
             return View(vm);
         }

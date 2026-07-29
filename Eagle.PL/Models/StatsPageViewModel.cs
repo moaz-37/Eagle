@@ -9,10 +9,11 @@ namespace Eagle.PL.Models
     }
 
     public class TimelinePageViewModel
-{
-    public List<SaleTimelineEntryDto> Entries { get; set; } = new();
-    public decimal TotalProfit { get; set; }
-    public List<SaleReceiptDto> OverduePayments { get; set; } = new();
-    public int OverdueDaysThreshold { get; set; } = 30;
-}
+    {
+        public List<SaleTimelineEntryDto> Entries { get; set; } = new();
+        public decimal TotalProfit { get; set; }
+        public List<SaleReceiptDto> OverduePayments { get; set; } = new();
+    }
+
+
 }

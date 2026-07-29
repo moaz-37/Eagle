@@ -1,12 +1,11 @@
 @model Eagle.PL.Models.TimelinePageViewModel
 @{
     ViewData["Title"] = "سجل العمليات";
-    
-    // Calculate totals dynamically from the entries list
+
     var totalProcesses = Model.Entries.Count;
     var totalSalesProfit = Model.Entries.Where(e => e.Type == "بيع").Sum(e => e.ProfitAmount);
     var totalReturnProfit = Model.Entries.Where(e => e.Type == "إرجاع").Sum(e => e.ProfitAmount);
-    var totalReturnLoss = totalReturnProfit < 0 ? -totalReturnProfit : totalReturnProfit; // Safe absolute value
+    var totalReturnLoss = totalReturnProfit < 0 ? -totalReturnProfit : totalReturnProfit;
 }
 
 <style>
@@ -30,7 +29,6 @@
         margin: 0;
     }
 
-    /* Filter Form */
     .filter-form {
         background-color: #ffffff;
         border-radius: 16px;
@@ -144,9 +142,6 @@
         color: #212529;
     }
 
-    /* ========================================
-       Stats Grid (4 Cards)
-       ======================================== */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -179,10 +174,21 @@
         height: 100%;
     }
 
-    .stat-card.card-processes::before { background-color: #6c757d; }
-    .stat-card.card-sales::before { background-color: #0d6efd; }
-    .stat-card.card-returns::before { background-color: #dc3545; }
-    .stat-card.card-profit::before { background-color: #198754; }
+    .stat-card.card-processes::before {
+        background-color: #6c757d;
+    }
+
+    .stat-card.card-sales::before {
+        background-color: #0d6efd;
+    }
+
+    .stat-card.card-returns::before {
+        background-color: #dc3545;
+    }
+
+    .stat-card.card-profit::before {
+        background-color: #198754;
+    }
 
     .stat-icon {
         width: 50px;
@@ -220,8 +226,13 @@
         font-size: 0.9rem;
     }
 
-    .profit-positive { color: #0f5132; }
-    .profit-negative { color: #842029; }
+    .profit-positive {
+        color: #0f5132;
+    }
+
+    .profit-negative {
+        color: #842029;
+    }
 
     .profit-trend {
         display: inline-flex;
@@ -243,7 +254,6 @@
         color: #842029;
     }
 
-    /* Table Wrapper */
     .table-wrapper {
         background-color: #ffffff;
         border-radius: 16px;
@@ -281,7 +291,6 @@
         font-size: 0.85rem;
     }
 
-    /* Modern Table */
     .timeline-table {
         margin: 0;
         width: 100%;
@@ -326,7 +335,6 @@
         border-bottom: none;
     }
 
-    /* Type Badge */
     .type-badge {
         display: inline-flex;
         align-items: center;
@@ -347,7 +355,6 @@
         color: #842029;
     }
 
-    /* Piece Code */
     .piece-code {
         font-family: 'Courier New', monospace;
         font-weight: 600;
@@ -364,7 +371,6 @@
         color: #212529;
     }
 
-    /* Variant Info */
     .variant-info {
         display: inline-flex;
         align-items: center;
@@ -385,7 +391,6 @@
         color: #7c3aed;
     }
 
-    /* Quantity */
     .quantity-badge {
         display: inline-flex;
         align-items: center;
@@ -400,7 +405,6 @@
         border: 1px solid #e9ecef;
     }
 
-    /* Price */
     .price-cell {
         font-weight: 600;
         color: #212529;
@@ -413,7 +417,6 @@
         font-size: 0.8rem;
     }
 
-    /* Profit Cell */
     .profit-cell {
         font-weight: 700;
         white-space: nowrap;
@@ -432,7 +435,6 @@
         color: #842029;
     }
 
-    /* Person */
     .person-name {
         display: inline-flex;
         align-items: center;
@@ -454,7 +456,6 @@
         flex-shrink: 0;
     }
 
-    /* Date */
     .date-cell {
         display: inline-flex;
         flex-direction: column;
@@ -472,7 +473,6 @@
         font-size: 0.8rem;
     }
 
-    /* Empty State */
     .empty-state {
         text-align: center;
         padding: 4rem 1.5rem;
@@ -503,13 +503,12 @@
         margin: 0;
     }
 
-    /* Responsive Table */
     .table-responsive-wrapper {
         overflow-x: auto;
     }
 
-    /* Responsive */
     @@media (max-width: 768px) {
+
         .timeline-table thead th,
         .timeline-table tbody td {
             padding: 0.75rem 1rem;
@@ -524,7 +523,6 @@
 
 <div class="container py-5">
 
-    <!-- Page Header -->
     <div class="page-header">
         <h2 class="form-title">
             <i class="bi bi-clock-history"></i>
@@ -533,7 +531,6 @@
         <p class="form-subtitle">عرض جميع عمليات البيع والإرجاع مع التفاصيل الكاملة</p>
     </div>
 
-    <!-- Filter Form -->
     <div class="filter-form">
         <h5 class="filter-title">
             <i class="bi bi-funnel-fill"></i>
@@ -560,7 +557,7 @@
                         <button type="submit" class="btn-filter flex-grow-1">
                             <i class="bi bi-funnel"></i> تصفية
                         </button>
-                        <a asp-action="Timeline" class="btn-reset">
+                        <a asp-action="History" class="btn-reset">
                             <i class="bi bi-arrow-clockwise"></i>
                         </a>
                     </div>
@@ -569,40 +566,27 @@
         </form>
     </div>
 
-    <!-- Stats Grid (4 Cards) -->
     <div class="stats-grid">
-        <!-- 1. Total Processes -->
         <div class="stat-card card-processes">
-            <div class="stat-icon">
-                <i class="bi bi-receipt"></i>
-            </div>
+            <div class="stat-icon"><i class="bi bi-receipt"></i></div>
             <div class="stat-label">إجمالي العمليات</div>
             <h4 class="stat-value">@totalProcesses <small>عملية</small></h4>
         </div>
 
-        <!-- 2. Total Sales Profit -->
         <div class="stat-card card-sales">
-            <div class="stat-icon">
-                <i class="bi bi-graph-up"></i>
-            </div>
+            <div class="stat-icon"><i class="bi bi-graph-up"></i></div>
             <div class="stat-label">إجمالي ربح المبيعات</div>
             <h4 class="stat-value profit-positive">@totalSalesProfit <small>ج.م</small></h4>
         </div>
 
-        <!-- 3. Total Return Loss -->
         <div class="stat-card card-returns">
-            <div class="stat-icon">
-                <i class="bi bi-arrow-return-left"></i>
-            </div>
+            <div class="stat-icon"><i class="bi bi-arrow-return-left"></i></div>
             <div class="stat-label">إجمالي خسائر الإرجاع</div>
             <h4 class="stat-value profit-negative">@totalReturnLoss <small>ج.م</small></h4>
         </div>
 
-        <!-- 4. Total Net Profit -->
         <div class="stat-card card-profit">
-            <div class="stat-icon">
-                <i class="bi bi-currency-exchange"></i>
-            </div>
+            <div class="stat-icon"><i class="bi bi-currency-exchange"></i></div>
             <div class="stat-label">إجمالي صافي الربح</div>
             <h4 class="stat-value @(Model.TotalProfit >= 0 ? "profit-positive" : "profit-negative")">
                 @Model.TotalProfit <small>ج.م</small>
@@ -613,14 +597,71 @@
         </div>
     </div>
 
+    @if (User.IsInRole("Manager") && Model.OverduePayments.Any())
+    {
+        <div class="table-wrapper mb-4" style="border: 2px solid #dc3545;">
+            <div class="table-header" style="background-color: #f8d7da;">
+                <h5 class="table-title" style="color: #842029;">
+                    <i class="bi bi-exclamation-octagon-fill"></i>
+                    حسابات آجلة لم تُسدد بالكامل
+                </h5>
+                <span class="table-count" style="background-color: #f5c2c7; color: #842029;">
+                    @Model.OverduePayments.Count حساب
+                </span>
+            </div>
+
+            <div class="table-responsive-wrapper">
+                <table class="timeline-table">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-person"></i> العميل</th>
+                            <th><i class="bi bi-telephone"></i> الهاتف</th>
+                            <th><i class="bi bi-receipt"></i> الإجمالي</th>
+                            <th><i class="bi bi-exclamation-triangle"></i> المتبقي</th>
+                            <th><i class="bi bi-calendar-x"></i> تاريخ البيع</th>
+                            <th><i class="bi bi-hourglass-split"></i> عدد الأيام منذ البيع</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.OverduePayments)
+                        {
+                            var daysLate = (DateTime.UtcNow - p.SaleDate).Days;
+                            <tr>
+                                <td><span class="product-name">@p.CustomerName</span></td>
+                                <td>@p.CustomerPhone</td>
+                                <td><span class="price-cell">@p.TotalAmount <small>ج.م</small></span></td>
+                                <td>
+                                    <span class="profit-cell profit-negative-cell">
+                                        @p.RemainingAmount <small>ج.م</small>
+                                    </span>
+                                </td>
+                                <td>@p.SaleDate.ToLocalTime().ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    <span class="type-badge type-return">
+                                        <i class="bi bi-clock-history"></i>
+                                        @daysLate يوم
+                                    </span>
+                                </td>
+                                <td>
+                                    <a asp-controller="Payments" asp-action="Details" asp-route-saleId="@p.SaleId"
+                                       class="btn-filter" style="padding:6px 14px;font-size:0.85rem;">
+                                        <i class="bi bi-eye"></i> عرض
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
     @if (!Model.Entries.Any())
     {
-        <!-- Empty State -->
         <div class="table-wrapper">
             <div class="empty-state">
-                <div class="empty-state-icon">
-                    <i class="bi bi-inbox"></i>
-                </div>
+                <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
                 <h5>لا توجد عمليات مطابقة</h5>
                 <p>جرّب تغيير معايير التصفية لعرض العمليات</p>
             </div>
@@ -628,7 +669,6 @@
     }
     else
     {
-        <!-- Timeline Table -->
         <div class="table-wrapper">
             <div class="table-header">
                 <h5 class="table-title">
@@ -642,46 +682,16 @@
                 <table class="timeline-table">
                     <thead>
                         <tr>
-                            <th>
-                                <i class="bi bi-arrow-left-right"></i>
-                                النوع
-                            </th>
-                            <th>
-                                <i class="bi bi-upc-scan"></i>
-                                كود الصنف
-                            </th>
-                            <th>
-                                <i class="bi bi-box-seam"></i>
-                                الاسم
-                            </th>
-                            <th>
-                                <i class="bi bi-palette"></i>
-                                اللون
-                            </th>
-                            <th>
-                                <i class="bi bi-rulers"></i>
-                                المقاس
-                            </th>
-                            <th>
-                                <i class="bi bi-boxes"></i>
-                                الكمية
-                            </th>
-                            <th>
-                                <i class="bi bi-tag-fill"></i>
-                                السعر
-                            </th>
-                            <th>
-                                <i class="bi bi-cash-stack"></i>
-                                الربح
-                            </th>
-                            <th>
-                                <i class="bi bi-person"></i>
-                                الشخص
-                            </th>
-                            <th>
-                                <i class="bi bi-clock"></i>
-                                التاريخ والوقت
-                            </th>
+                            <th><i class="bi bi-arrow-left-right"></i> النوع</th>
+                            <th><i class="bi bi-upc-scan"></i> كود الصنف</th>
+                            <th><i class="bi bi-box-seam"></i> الاسم</th>
+                            <th><i class="bi bi-palette"></i> اللون</th>
+                            <th><i class="bi bi-rulers"></i> المقاس</th>
+                            <th><i class="bi bi-boxes"></i> الكمية</th>
+                            <th><i class="bi bi-tag-fill"></i> السعر</th>
+                            <th><i class="bi bi-cash-stack"></i> الربح</th>
+                            <th><i class="bi bi-person"></i> الشخص</th>
+                            <th><i class="bi bi-clock"></i> التاريخ والوقت</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -689,7 +699,8 @@
                         {
                             var isSale = e.Type == "بيع";
                             var initials = string.IsNullOrEmpty(e.PersonName) ? "?" :
-                                e.PersonName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a + b).ToUpper();
+                                e.PersonName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a +
+                    b).ToUpper();
                             var entryDate = e.Date.ToLocalTime();
                             <tr>
                                 <td>
@@ -698,12 +709,8 @@
                                         @e.Type
                                     </span>
                                 </td>
-                                <td>
-                                    <span class="piece-code">@e.PieceCode</span>
-                                </td>
-                                <td>
-                                    <span class="product-name">@e.ProductName</span>
-                                </td>
+                                <td><span class="piece-code">@e.PieceCode</span></td>
+                                <td><span class="product-name">@e.ProductName</span></td>
                                 <td>
                                     <span class="variant-info variant-color">
                                         <i class="bi bi-palette"></i>
@@ -716,14 +723,11 @@
                                         @e.Size
                                     </span>
                                 </td>
+                                <td><span class="quantity-badge">@e.Quantity</span></td>
+                                <td><span class="price-cell">@e.UnitPrice <small>ج.م</small></span></td>
                                 <td>
-                                    <span class="quantity-badge">@e.Quantity</span>
-                                </td>
-                                <td>
-                                    <span class="price-cell">@e.UnitPrice <small>ج.م</small></span>
-                                </td>
-                                <td>
-                                    <span class="profit-cell @(e.ProfitAmount >= 0 ? "profit-positive-cell" : "profit-negative-cell")">
+                                    <span
+                                        class="profit-cell @(e.ProfitAmount >= 0 ? "profit-positive-cell" : "profit-negative-cell")">
                                         @e.ProfitAmount <small>ج.م</small>
                                     </span>
                                 </td>
