@@ -1,4 +1,4 @@
-@model List<Eagle.BL.DTOs.SaleBalanceDto>
+@model List<Eagle.BL.DTOs.SaleReceiptDto>
 @{
     ViewData["Title"] = "الحسابات الآجلة";
 }
@@ -44,7 +44,6 @@
         border: 1px solid #e9ecef;
     }
 
-    /* Table Wrapper */
     .table-wrapper {
         background-color: #ffffff;
         border-radius: 16px;
@@ -73,18 +72,6 @@
         gap: 0.5rem;
     }
 
-    .table-total {
-        color: #6c757d;
-        font-size: 0.9rem;
-        font-weight: 500;
-    }
-
-    .table-total strong {
-        color: #842029;
-        font-weight: 700;
-    }
-
-    /* Search Form in Header */
     .search-form {
         display: flex;
         gap: 0.5rem;
@@ -170,7 +157,6 @@
         background-color: #fff5f5;
     }
 
-    /* Modern Table */
     .balance-table {
         margin: 0;
         width: 100%;
@@ -215,7 +201,6 @@
         border-bottom: none;
     }
 
-    /* Customer Cell */
     .customer-cell {
         display: flex;
         align-items: center;
@@ -242,7 +227,6 @@
         color: #212529;
     }
 
-    /* Phone Cell */
     .phone-cell {
         display: inline-flex;
         align-items: center;
@@ -259,7 +243,6 @@
         font-size: 0.95rem;
     }
 
-    /* Amount Cells */
     .amount-cell {
         font-weight: 700;
         white-space: nowrap;
@@ -291,7 +274,6 @@
         font-size: 1rem;
     }
 
-    /* Date Cell */
     .date-cell {
         display: inline-flex;
         align-items: center;
@@ -306,7 +288,6 @@
         font-size: 1rem;
     }
 
-    /* Details Button */
     .btn-details {
         background-color: #ffffff;
         border: 1.5px solid #212529;
@@ -330,7 +311,6 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
-    /* Empty State */
     .empty-state {
         text-align: center;
         padding: 4rem 1.5rem;
@@ -363,12 +343,10 @@
         margin: 0;
     }
 
-    /* Responsive Table */
     .table-responsive-wrapper {
         overflow-x: auto;
     }
 
-    /* Responsive */
     @@media (max-width: 768px) {
         .page-header {
             flex-direction: column;
@@ -411,7 +389,6 @@
 
 <div class="container py-5">
 
-    <!-- Page Header -->
     <div class="page-header">
         <div class="page-title-group">
             <h2 class="form-title">
@@ -425,7 +402,6 @@
 
     @if (!Model.Any())
     {
-        <!-- Empty State -->
         <div class="empty-state">
             <div class="empty-state-icon">
                 <i class="bi bi-check-circle"></i>
@@ -436,7 +412,6 @@
     }
     else
     {
-        <!-- Balance Table -->
         <div class="table-wrapper">
             <div class="table-header">
                 <h5 class="table-title">
@@ -444,11 +419,9 @@
                     قائمة الحسابات الآجلة
                 </h5>
 
-                <!-- Search Form -->
                 <form method="get" class="search-form">
                     <div class="search-input-wrapper">
-                        <input type="text" name="search" class="form-control"
-                               placeholder="اسم العميل / رقم الهاتف"
+                        <input type="text" name="search" class="form-control" placeholder="اسم العميل / رقم الهاتف"
                                value="@ViewBag.Search" />
                         <i class="bi bi-search input-icon"></i>
                     </div>
@@ -469,30 +442,12 @@
                 <table class="balance-table">
                     <thead>
                         <tr>
-                            <th>
-                                <i class="bi bi-person"></i>
-                                العميل
-                            </th>
-                            <th>
-                                <i class="bi bi-telephone"></i>
-                                الهاتف
-                            </th>
-                            <th>
-                                <i class="bi bi-receipt"></i>
-                                الإجمالي
-                            </th>
-                            <th>
-                                <i class="bi bi-cash-coin"></i>
-                                المدفوع
-                            </th>
-                            <th>
-                                <i class="bi bi-exclamation-triangle"></i>
-                                المتبقي
-                            </th>
-                            <th>
-                                <i class="bi bi-calendar-event"></i>
-                                تاريخ البيع
-                            </th>
+                            <th><i class="bi bi-person"></i> العميل</th>
+                            <th><i class="bi bi-telephone"></i> الهاتف</th>
+                            <th><i class="bi bi-receipt"></i> الإجمالي</th>
+                            <th><i class="bi bi-cash-coin"></i> المدفوع</th>
+                            <th><i class="bi bi-exclamation-triangle"></i> المتبقي</th>
+                            <th><i class="bi bi-calendar-event"></i> تاريخ البيع</th>
                             <th>الإجراءات</th>
                         </tr>
                     </thead>
@@ -500,7 +455,8 @@
                         @foreach (var s in Model)
                         {
                             var initials = string.IsNullOrEmpty(s.CustomerName) ? "?" :
-                                s.CustomerName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a + b).ToUpper();
+                                s.CustomerName.Split(' ').Take(2).Select(n => n.FirstOrDefault()).Aggregate("", (a, b) => a +
+                    b).ToUpper();
                             var saleDate = s.SaleDate.ToLocalTime();
                             <tr>
                                 <td>
@@ -515,21 +471,9 @@
                                         @s.CustomerPhone
                                     </span>
                                 </td>
-                                <td>
-                                    <span class="amount-cell amount-total">
-                                        @s.TotalAmount <small>ج.م</small>
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="amount-cell amount-paid">
-                                        @s.AmountPaid <small>ج.م</small>
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="amount-cell amount-remaining">
-                                        @s.RemainingAmount <small>ج.م</small>
-                                    </span>
-                                </td>
+                                <td><span class="amount-cell amount-total">@s.TotalAmount <small>ج.م</small></span></td>
+                                <td><span class="amount-cell amount-paid">@s.AmountPaid <small>ج.م</small></span></td>
+                                <td><span class="amount-cell amount-remaining">@s.RemainingAmount <small>ج.م</small></span></td>
                                 <td>
                                     <span class="date-cell">
                                         <i class="bi bi-calendar-event"></i>

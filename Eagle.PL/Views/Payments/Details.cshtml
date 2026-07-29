@@ -1,4 +1,4 @@
-@model Eagle.BL.DTOs.SaleBalanceDto
+@model Eagle.BL.DTOs.SaleReceiptDto
 @{
     ViewData["Title"] = "تفاصيل الحساب";
 }
@@ -67,7 +67,6 @@
         color: #842029;
     }
 
-    /* Back Button */
     .btn-back {
         background-color: #ffffff;
         border: 1.5px solid #212529;
@@ -90,9 +89,6 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
-    /* ========================================
-       Stats Grid (4 Cards)
-       ======================================== */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -185,7 +181,6 @@
         color: #842029;
     }
 
-    /* Section Wrapper */
     .section-wrapper {
         background-color: #ffffff;
         border-radius: 16px;
@@ -224,11 +219,6 @@
         font-size: 0.85rem;
     }
 
-    .section-body {
-        padding: 1.5rem;
-    }
-
-    /* Modern Table */
     .lines-table {
         margin: 0;
         width: 100%;
@@ -273,7 +263,6 @@
         border-bottom: none;
     }
 
-    /* Cell Styles */
     .piece-code {
         font-family: 'Courier New', monospace;
         font-weight: 600;
@@ -336,7 +325,6 @@
         font-size: 0.8rem;
     }
 
-    /* Payment Form */
     .payment-form {
         background-color: #ffffff;
         border-radius: 16px;
@@ -455,12 +443,10 @@
         transform: translateY(0);
     }
 
-    /* Responsive Table */
     .table-responsive-wrapper {
         overflow-x: auto;
     }
 
-    /* Responsive */
     @@media (max-width: 768px) {
         .page-header {
             flex-direction: column;
@@ -481,7 +467,6 @@
 
 <div class="container py-5">
 
-    <!-- Page Header -->
     <div class="page-header">
         <div class="page-title-group">
             <h2 class="form-title">
@@ -500,9 +485,7 @@
         </a>
     </div>
 
-    <!-- Stats Grid (4 Cards) -->
     <div class="stats-grid">
-        <!-- 1. Total Amount -->
         <div class="stat-card card-total">
             <div class="stat-icon">
                 <i class="bi bi-receipt"></i>
@@ -511,7 +494,6 @@
             <h4 class="stat-value">@Model.TotalAmount <small>ج.م</small></h4>
         </div>
 
-        <!-- 2. Paid Amount -->
         <div class="stat-card card-paid">
             <div class="stat-icon">
                 <i class="bi bi-cash-coin"></i>
@@ -520,7 +502,6 @@
             <h4 class="stat-value value-positive">@Model.AmountPaid <small>ج.م</small></h4>
         </div>
 
-        <!-- 3. Remaining Amount -->
         <div class="stat-card card-remaining">
             <div class="stat-icon">
                 <i class="bi bi-exclamation-triangle"></i>
@@ -531,7 +512,6 @@
             </h4>
         </div>
 
-        <!-- 4. Status -->
         <div class="stat-card card-status">
             <div class="stat-icon">
                 <i class="bi bi-info-circle"></i>
@@ -546,74 +526,49 @@
         </div>
     </div>
 
-    <!-- Sale Lines Section -->
     <div class="section-wrapper">
         <div class="section-header">
             <h5 class="section-title">
                 <i class="bi bi-box-seam"></i>
                 الأصناف
             </h5>
-            <span class="section-badge">@Model.Lines.Count صنف</span>
+            <span class="section-badge">@Model.Items.Count صنف</span>
         </div>
 
         <div class="table-responsive-wrapper">
             <table class="lines-table">
                 <thead>
                     <tr>
-                        <th>
-                            <i class="bi bi-upc-scan"></i>
-                            كود الصنف
-                        </th>
-                        <th>
-                            <i class="bi bi-box-seam"></i>
-                            الاسم
-                        </th>
-                        <th>
-                            <i class="bi bi-palette"></i>
-                            اللون
-                        </th>
-                        <th>
-                            <i class="bi bi-rulers"></i>
-                            المقاس
-                        </th>
-                        <th>
-                            <i class="bi bi-boxes"></i>
-                            الكمية
-                        </th>
-                        <th>
-                            <i class="bi bi-tag-fill"></i>
-                            السعر
-                        </th>
+                        <th><i class="bi bi-upc-scan"></i> كود الصنف</th>
+                        <th><i class="bi bi-box-seam"></i> الاسم</th>
+                        <th><i class="bi bi-palette"></i> اللون</th>
+                        <th><i class="bi bi-rulers"></i> المقاس</th>
+                        <th><i class="bi bi-boxes"></i> الكمية</th>
+                        <th><i class="bi bi-tag-fill"></i> السعر</th>
+                        <th><i class="bi bi-calculator"></i> الإجمالي</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var l in Model.Lines)
+                    @foreach (var item in Model.Items)
                     {
                         <tr>
-                            <td>
-                                <span class="piece-code">@l.PieceCode</span>
-                            </td>
-                            <td>
-                                <span class="product-name">@l.ProductName</span>
-                            </td>
+                            <td><span class="piece-code">@item.PieceCode</span></td>
+                            <td><span class="product-name">@item.ProductName</span></td>
                             <td>
                                 <span class="variant-info variant-color">
                                     <i class="bi bi-palette"></i>
-                                    @l.Color
+                                    @item.Color
                                 </span>
                             </td>
                             <td>
                                 <span class="variant-info variant-size">
                                     <i class="bi bi-rulers"></i>
-                                    @l.Size
+                                    @item.Size
                                 </span>
                             </td>
-                            <td>
-                                <span class="quantity-badge">@l.Quantity</span>
-                            </td>
-                            <td>
-                                <span class="price-cell">@l.UnitPrice <small>ج.م</small></span>
-                            </td>
+                            <td><span class="quantity-badge">@item.Quantity</span></td>
+                            <td><span class="price-cell">@item.UnitSellPrice <small>ج.م</small></span></td>
+                            <td><span class="price-cell">@item.LineTotal <small>ج.م</small></span></td>
                         </tr>
                     }
                 </tbody>
@@ -621,7 +576,6 @@
         </div>
     </div>
 
-    <!-- Payment Form (Only if not fully paid) -->
     @if (!Model.IsFullyPaid)
     {
         <div class="payment-form">
