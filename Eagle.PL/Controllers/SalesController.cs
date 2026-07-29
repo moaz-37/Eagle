@@ -38,7 +38,7 @@ namespace Eagle.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromBody] CreateSaleDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateSaleRequestDto dto)
         {
             var cashierId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var result = await _saleService.CreateSaleAsync(dto, cashierId);
@@ -55,7 +55,7 @@ namespace Eagle.PL.Controllers
         [HttpGet]
         public async Task<IActionResult> PrintReceipt(int id)
         {
-            var receipt = await _saleService.GetSaleReceiptAsync(id);
+            var receipt = await _saleService.GetSaleBalanceAsync(id);
             if (receipt is null) return NotFound();
 
             return View(receipt);
