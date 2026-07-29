@@ -32,6 +32,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<SaleService>();
 builder.Services.AddScoped<OverrideCodeService>();
+builder.Services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
 
 var app = builder.Build();
 

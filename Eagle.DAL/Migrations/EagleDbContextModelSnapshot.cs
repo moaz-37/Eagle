@@ -22,6 +22,29 @@ namespace Eagle.DAL.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Eagle.DAL.Entities.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Customers");
+                });
+
             modelBuilder.Entity("Eagle.DAL.Entities.DailyOverrideCode", b =>
                 {
                     b.Property<int>("Id")
@@ -43,6 +66,39 @@ namespace Eagle.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("DailyOverrideCodes");
+                });
+
+            modelBuilder.Entity("Eagle.DAL.Entities.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReceivedByNameSnapshot")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("ReceivedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SaleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceivedByUserId");
+
+                    b.HasIndex("SaleId");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Eagle.DAL.Entities.Product", b =>
@@ -146,7 +202,17 @@ namespace Eagle.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal>("AmountPaid")
+                        .HasColumnType("decimal(10,2)");
+
                     b.Property<string>("CashierNameSnapshot")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PaymentType")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -160,6 +226,8 @@ namespace Eagle.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
 
                     b.HasIndex("UserId");
 
@@ -403,6 +471,24 @@ namespace Eagle.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Eagle.DAL.Entities.Payment", b =>
+                {
+                    b.HasOne("Eagle.DAL.Entities.User", "ReceivedByUser")
+                        .WithMany()
+                        .HasForeignKey("ReceivedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Eagle.DAL.Entities.Sale", "Sale")
+                        .WithMany("Payments")
+                        .HasForeignKey("SaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ReceivedByUser");
+
+                    b.Navigation("Sale");
+                });
+
             modelBuilder.Entity("Eagle.DAL.Entities.ProductVariant", b =>
                 {
                     b.HasOne("Eagle.DAL.Entities.Product", "Product")
@@ -416,10 +502,17 @@ namespace Eagle.DAL.Migrations
 
             modelBuilder.Entity("Eagle.DAL.Entities.Sale", b =>
                 {
+                    b.HasOne("Eagle.DAL.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Eagle.DAL.Entities.User", "User")
                         .WithMany("Sales")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Customer");
 
                     b.Navigation("User");
                 });
@@ -524,6 +617,8 @@ namespace Eagle.DAL.Migrations
 
             modelBuilder.Entity("Eagle.DAL.Entities.Sale", b =>
                 {
+                    b.Navigation("Payments");
+
                     b.Navigation("SaleItems");
                 });
 
