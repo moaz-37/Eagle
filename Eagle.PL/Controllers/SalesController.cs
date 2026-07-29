@@ -62,14 +62,25 @@ namespace Eagle.PL.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> History(DateTime? from, DateTime? to, Guid? cashierId)
+        public async Task<IActionResult> History(DateTime? from, DateTime? to, Guid? cashierId, int overdueDays = 30)
         {
             Guid? effectiveCashierId = cashierId;
             if (!User.IsInRole("Manager"))
                 effectiveCashierId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             var entries = await _saleService.GetTimelineAsync(new SaleStatsFilter(from, to, effectiveCashierId));
-            var vm = new TimelinePageViewModel { Entries = entries, TotalProfit = entries.Sum(e => e.ProfitAmount) };
+
+            var vm = new TimelinePageViewModel
+            {
+                Entries = entries,
+                TotalProfit = entries.Sum(e => e.ProfitAmount),
+                OverdueDaysThreshold = overdueDays
+            };
+
+            // Only managers see overdue accounts — cashiers get the sales/returns timeline only
+            if (User.IsInRole("Manager"))
+                vm.OverduePayments = await _saleService.GetOverduePaymentsAsync(overdueDays);
+
             return View(vm);
         }
 

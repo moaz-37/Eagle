@@ -343,6 +343,20 @@ namespace Eagle.BL.Services
             return sales.Select(MapToReceiptDto).ToList();
         }
 
+
+        public async Task<List<SaleReceiptDto>> GetOverduePaymentsAsync(int daysThreshold = 30)
+        {
+            var cutoff = DateTime.UtcNow.AddDays(-daysThreshold);
+
+            var query = _db.Sales
+                .Include(s => s.Customer)
+                .Include(s => s.SaleItems).ThenInclude(si => si.ProductVariant).ThenInclude(v => v.Product)
+                .Where(s => s.PaymentType == "Credit" && s.AmountPaid < s.TotalAmount && s.SaleDate <= cutoff);
+
+            var sales = await query.OrderBy(s => s.SaleDate).ToListAsync();
+            return sales.Select(MapToReceiptDto).ToList();
+        }
+
         public async Task<PaymentResult> AddPaymentAsync(AddPaymentDto dto, Guid userId)
         {
             var sale = await _db.Sales.FirstOrDefaultAsync(s => s.Id == dto.SaleId);
